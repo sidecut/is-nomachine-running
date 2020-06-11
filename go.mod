@@ -1,4 +1,4 @@
-module is_nomachine_running
+module github.com/sidecut/is-nomachine-running
 
 go 1.14
 
