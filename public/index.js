@@ -14,9 +14,10 @@ var app = new Vue({
   methods: {
     getStatus: function () {
       try {
-        console.log("getStatus");
+        this.loading = true;
         fetch("./api")
           .then((response) => {
+            this.loading = false;
             if (response.ok) {
               response.json().then((data) => {
                 this.connected = true;
@@ -28,12 +29,10 @@ var app = new Vue({
           .catch((err) => {
             this.connected = false;
             this.loading = false;
-            console.error(err);
           });
       } catch (err) {
         this.loading = false;
         this.connected = false;
-        console.error(err);
       }
     },
   },

@@ -9,8 +9,16 @@
   </head>
   <body>
     <div id="app">
-      <!-- <span v-text="connected"></span> -->
-      <h2 :class="{error: !connected}">NoMachine status on {{.HostName}}:</h2>
+      <h2 :class="{error: !connected}">
+        NoMachine status on {{.HostName}}:
+        <span v-show="loading">
+          <img
+            src="Spinner-1s-200px.svg"
+            alt="loading"
+            class="loading-spinner"
+          />
+        </span>
+      </h2>
       <div v-if="connected" style="font-size: 150%;">
         <div v-if="isRunning" class="host-running">
           NoMachine host process is running.
@@ -25,23 +33,20 @@
           NoMachine host process is NOT running.
         </div>
       </div>
-      <div v-if="!connected" style="font-size: 150%;">
+      <div v-else style="font-size: 150%;">
         <div class="error">Can't get status from {{.HostName}}</div>
       </div>
+      <button
+        v-if="!loading"
+        class="loading-spinner refresh-button"
+        @click="getStatus"
+      >
+        Refresh
+      </button>
     </div>
 
-    <!-- {{if .NoMachineRunning}}
-    <div class="host-running">NoMachine host process is running.</div>
-    {{if .ClientAttached}}
-    <div class="attached-client">A client IS attached</div>
-    {{else}}
-    <div class="no-attached-client">No client is attached</div>
-    {{end}} {{else}}
-    <div class="host-not-running">NoMachine host process is NOT running.</div>
-    {{end}} -->
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
     <input id="is-running" type="hidden" value="{{.NoMachineRunning}}" />
     <input id="client-attached" type="hidden" value="{{.ClientAttached}}" />
     <script src="index.js"></script>

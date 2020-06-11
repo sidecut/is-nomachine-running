@@ -25,3 +25,10 @@ div {
 .error {
   color: red;
 }
+.loading-spinner {
+  height: 28px;
+  vertical-align: bottom;
+}
+.refresh-button {
+  margin-top: 2rem;
+}
