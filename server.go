@@ -23,6 +23,15 @@ func Index(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", status)
 }
 
+func statusAPI(c echo.Context) error {
+	status, err := getStatus()
+	if err != nil {
+		// TODO: log this error
+		return err
+	}
+	return c.JSON(http.StatusOK, status)
+}
+
 func main() {
 	t := &Template{
 		templates: template.Must(template.ParseGlob("public/views/*.html")),
@@ -31,6 +40,7 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 	e.GET("/hello", Hello)
+	e.GET("/api", statusAPI)
 	e.GET("/", Index)
 
 	// e.GET("/", func(c echo.Context) error {
