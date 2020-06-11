@@ -34,7 +34,7 @@ func statusAPI(c echo.Context) error {
 
 func main() {
 	t := &Template{
-		templates: template.Must(template.ParseGlob("public/views/*.html")),
+		templates: template.Must(template.ParseGlob("views/*.html")),
 	}
 
 	e := echo.New()
@@ -42,6 +42,7 @@ func main() {
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
 	e.GET("/", Index)
+	e.Static("/", "public")
 
 	// e.GET("/", func(c echo.Context) error {
 	// 	return c.String(http.StatusOK, "Hello, World!")

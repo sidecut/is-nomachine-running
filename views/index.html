@@ -1,0 +1,50 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoMachine status on {{.HostName}}</title>
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- <span v-text="connected"></span> -->
+      <h2 :class="{error: !connected}">NoMachine status on {{.HostName}}:</h2>
+      <div v-if="connected" style="font-size: 150%;">
+        <div v-if="isRunning" class="host-running">
+          NoMachine host process is running.
+        </div>
+        <div v-if="isRunning">
+          <div v-if="hasClient" class="attached-client">
+            A client IS attached
+          </div>
+          <div v-else class="no-attached-client">No client is attached</div>
+        </div>
+        <div v-else class="host-not-running">
+          NoMachine host process is NOT running.
+        </div>
+      </div>
+      <div v-if="!connected" style="font-size: 150%;">
+        <div class="error">Can't get status from {{.HostName}}</div>
+      </div>
+    </div>
+
+    <!-- {{if .NoMachineRunning}}
+    <div class="host-running">NoMachine host process is running.</div>
+    {{if .ClientAttached}}
+    <div class="attached-client">A client IS attached</div>
+    {{else}}
+    <div class="no-attached-client">No client is attached</div>
+    {{end}} {{else}}
+    <div class="host-not-running">NoMachine host process is NOT running.</div>
+    {{end}} -->
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <input id="is-running" type="hidden" value="{{.NoMachineRunning}}" />
+    <input id="client-attached" type="hidden" value="{{.ClientAttached}}" />
+    <script src="index.js"></script>
+  </body>
+</html>
+{{end}}

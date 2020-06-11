@@ -1,0 +1,27 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 1rem;
+}
+div {
+  margin-top: 1rem;
+  /* font-size: 150%; */
+}
+
+.attached-client {
+  font-weight: bold;
+  color: coral;
+}
+.no-attached-client {
+  color: green;
+}
+.host-not-running {
+  font-weight: bold;
+  color: red;
+}
+.host-running {
+  font-weight: bold;
+  color: green;
+}
+.error {
+  color: red;
+}
