@@ -1,0 +1,47 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoMachine status on {{.HostName}}</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      div {
+        margin-top: 1rem;
+        font-size: 150%;
+      }
+
+      .attached-client {
+        font-weight: bold;
+        color: coral;
+      }
+      .no-attached-client {
+        color: green;
+      }
+      .host-not-running {
+        font-weight: bold;
+        color: red;
+      }
+      .host-running {
+        font-weight: bold;
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>NoMachine status on {{.HostName}}:</h2>
+    {{if .NoMachineRunning}}
+    <div class="host-running">NoMachine host process is running.</div>
+    {{if .ClientAttached}}
+    <div class="attached-client">A client IS attached</div>
+    {{else}}
+    <div class="no-attached-client">No client is attached</div>
+    {{end}} {{else}}
+    <div class="host-not-running">NoMachine host process is NOT running.</div>
+    {{end}}
+  </body>
+</html>
+{{end}}
