@@ -43,6 +43,11 @@
     {{end}} {{else}}
     <div class="host-not-running">NoMachine host process is NOT running.</div>
     {{end}}
+    <script>
+      window.setInterval(() => {
+        window.location = window.location;
+      }, 6000);
+    </script>
   </body>
 </html>
 {{end}}
