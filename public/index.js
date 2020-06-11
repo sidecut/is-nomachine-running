@@ -8,8 +8,8 @@ var app = new Vue({
   },
   mounted: function () {
     window.setInterval(this.getStatus, 6000);
-    this.isRunning = !!document.getElementById("is-running").nodeValue;
-    this.hasClient = !!document.getElementById("client-attached").nodeValue;
+    this.isRunning = document.getElementById("is-running").value == "true";
+    this.hasClient = document.getElementById("client-attached") == "true";
   },
   methods: {
     getStatus: function () {
