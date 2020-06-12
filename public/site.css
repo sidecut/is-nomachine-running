@@ -7,6 +7,9 @@ div {
   /* font-size: 150%; */
 }
 
+[v-cloak] {
+  display: none;
+}
 .attached-client {
   font-weight: bold;
   color: coral;
