@@ -39,7 +39,7 @@
       <button
         :disabled="loading"
         class="loading-spinner refresh-button"
-        @click="getStatus"
+        @click="refreshClick"
       >
         <span v-show="!loading">Refresh</span>
         <img

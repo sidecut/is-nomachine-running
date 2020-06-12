@@ -5,9 +5,10 @@ var app = new Vue({
     isRunning: false,
     hasClient: false,
     loading: false,
+    timerHandle: -1,
   },
   mounted: function () {
-    window.setInterval(this.getStatus, 60000);
+    this.setUpTimer();
     this.isRunning = document.getElementById("is-running").value == "true";
     this.hasClient = document.getElementById("client-attached").value == "true";
   },
@@ -17,7 +18,6 @@ var app = new Vue({
         this.loading = true;
         fetch("./api")
           .then((response) => {
-            this.loading = false;
             if (response.ok) {
               response.json().then((data) => {
                 this.connected = true;
@@ -28,12 +28,27 @@ var app = new Vue({
           })
           .catch((err) => {
             this.connected = false;
+          })
+          .finally(() => {
             this.loading = false;
+            this.setUpTimer();
           });
       } catch (err) {
         this.loading = false;
         this.connected = false;
+        this.setUpTimer();
       }
+    },
+    refreshClick() {
+      this.clearTimer();
+      this.getStatus();
+    },
+    clearTimer() {
+      window.clearTimeout(this.timerHandle);
+      this.timerHandle = -1;
+    },
+    setUpTimer() {
+      this.timerHandle = window.setTimeout(this.getStatus, 45000);
     },
   },
 });
