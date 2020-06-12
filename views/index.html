@@ -37,7 +37,7 @@
         <div class="error">Can't get status from {{.HostName}}</div>
       </div>
       <button
-        v-if="!loading"
+        :disabled="loading"
         class="loading-spinner refresh-button"
         @click="getStatus"
       >
