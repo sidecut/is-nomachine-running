@@ -7,7 +7,7 @@ var app = new Vue({
     loading: false,
   },
   mounted: function () {
-    window.setInterval(this.getStatus, 6000);
+    window.setInterval(this.getStatus, 60000);
     this.isRunning = document.getElementById("is-running").value == "true";
     this.hasClient = document.getElementById("client-attached") == "true";
   },
