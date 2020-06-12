@@ -41,7 +41,13 @@
         class="loading-spinner refresh-button"
         @click="getStatus"
       >
-        Refresh
+        <span v-show="!loading">Refresh</span>
+        <img
+          v-show="loading"
+          src="Spinner-1s-200px.svg"
+          alt="loading"
+          class="loading-spinner"
+        />
       </button>
     </div>
 
