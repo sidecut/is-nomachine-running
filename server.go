@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 // Hello just outputs "hello, world" using an HTML template
@@ -39,6 +40,7 @@ func main() {
 
 	e := echo.New()
 	e.Renderer = t
+	e.Use(middleware.Gzip())
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
 	e.GET("/", Index)
