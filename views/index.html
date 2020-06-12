@@ -25,9 +25,9 @@
         </div>
         <div v-if="isRunning">
           <div v-if="hasClient" class="attached-client">
-            A client IS attached
+            A client IS attached -- use caution when connecting
           </div>
-          <div v-else class="no-attached-client">No client is attached</div>
+          <div v-else class="no-attached-client">No client is attached -- free to connect</div>
         </div>
         <div v-else class="host-not-running">
           NoMachine host process is NOT running.
