@@ -19,22 +19,26 @@
           />
         </span>
       </h2>
-      <div v-if="connected" style="font-size: 150%;">
-        <div v-if="isRunning" class="host-running">
-          NoMachine host process is running.
-        </div>
-        <div v-if="isRunning">
-          <div v-if="hasClient" class="attached-client">
-            A client IS attached -- use caution when connecting
+      <div v-if="initialized">
+        <div v-if="connected" style="font-size: 150%;">
+          <div v-if="isRunning" class="host-running">
+            NoMachine host process is running.
           </div>
-          <div v-else class="no-attached-client">No client is attached -- free to connect</div>
+          <div v-if="isRunning">
+            <div v-if="hasClient" class="attached-client">
+              A client IS attached -- use caution when connecting
+            </div>
+            <div v-else class="no-attached-client">
+              No client is attached -- free to connect
+            </div>
+          </div>
+          <div v-else class="host-not-running">
+            NoMachine host process is NOT running.
+          </div>
         </div>
-        <div v-else class="host-not-running">
-          NoMachine host process is NOT running.
+        <div v-else style="font-size: 150%;">
+          <div class="error">Can't get status from {{.HostName}}</div>
         </div>
-      </div>
-      <div v-else style="font-size: 150%;">
-        <div class="error">Can't get status from {{.HostName}}</div>
       </div>
       <button
         :disabled="loading"
@@ -53,8 +57,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
-    <input id="is-running" type="hidden" value="{{.NoMachineRunning}}" />
-    <input id="client-attached" type="hidden" value="{{.ClientAttached}}" />
     <script src="index.js"></script>
   </body>
 </html>

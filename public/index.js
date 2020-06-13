@@ -1,6 +1,7 @@
 var app = new Vue({
   el: "#app",
   data: {
+    initialized: false,
     connected: true,
     isRunning: false,
     hasClient: false,
@@ -8,9 +9,7 @@ var app = new Vue({
     timerHandle: -1,
   },
   mounted: function () {
-    this.setUpTimer();
-    this.isRunning = document.getElementById("is-running").value == "true";
-    this.hasClient = document.getElementById("client-attached").value == "true";
+    this.getStatus();
   },
   methods: {
     getStatus: function () {
@@ -30,10 +29,12 @@ var app = new Vue({
             this.connected = false;
           })
           .finally(() => {
+            this.initialized = true;
             this.loading = false;
             this.setUpTimer();
           });
       } catch (err) {
+        this.initialized = true;
         this.loading = false;
         this.connected = false;
         this.setUpTimer();
