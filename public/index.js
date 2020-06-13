@@ -29,11 +29,9 @@ var app = new Vue({
             this.connected = false;
           })
           .finally(() => {
-            window.setTimeout(() => {
-              this.initialized = true;
-              this.loading = false;
-              this.setUpTimer();
-            }, 3000);
+            this.initialized = true;
+            this.loading = false;
+            this.setUpTimer();
           });
       } catch (err) {
         this.initialized = true;
