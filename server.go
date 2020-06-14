@@ -41,6 +41,7 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 	e.Use(middleware.Gzip())
+	e.Use(middleware.CORS())
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
 	// e.GET("/", Index)
