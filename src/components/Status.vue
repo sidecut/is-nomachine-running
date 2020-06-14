@@ -80,7 +80,11 @@ export default class Status extends Vue {
 
   get apiAddress(): string {
     if (this.hostName) {
-      return `//${this.hostName}/api`;
+      if (this.hostName.includes("//")) {
+        return `${this.hostName}/api`;
+      } else {
+        return `//${this.hostName}/api`;
+      }
     } else {
       return "./api";
     }
