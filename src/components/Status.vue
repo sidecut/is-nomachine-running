@@ -1,10 +1,18 @@
 <template>
   <div>
-    <h2 :class="{ error: !connected }">
-      NoMachine status on {{ hostName }}:
-      <span :class="{ hidden: !loading }">
-        <img src="Spinner-1s-200px.svg" alt="loading" class="loading-spinner" />
-      </span>
+    <h2 :class="{ error: !connected, header: true }">
+      <div>&nbsp;</div>
+      <div>
+        NoMachine status on {{ hostName }}:
+        <span :class="{ hidden: !loading }">
+          <img
+            src="Spinner-1s-200px.svg"
+            alt="loading"
+            class="loading-spinner"
+          />
+        </span>
+      </div>
+      <div class="setup-gear" @click="settingsClick">⚙️</div>
     </h2>
     <div v-if="initialized">
       <div v-if="connected" style="font-size: 150%;">
@@ -70,10 +78,18 @@ export default class Status extends Vue {
     this.getStatus();
   }
 
+  get apiAddress(): string {
+    if (this.hostName) {
+      return `//${this.hostName}/api`;
+    } else {
+      return "./api";
+    }
+  }
+
   getStatus() {
     try {
       this.loading = true;
-      fetch("./api")
+      fetch(this.apiAddress)
         .then((response) => {
           if (response.ok) {
             response.json().then((data: ApiData) => {
@@ -116,6 +132,19 @@ export default class Status extends Vue {
   setUpTimer() {
     this.timerHandle = window.setTimeout(this.getStatus, 45000);
   }
+
+  settingsClick() {
+    let newHostName = window.prompt("Enter hostname", this.hostName);
+    if (newHostName != null && newHostName != this.hostName) {
+      let keepHostname = window.confirm(
+        `Use "${newHostName}" instead of "${this.hostName}"?`
+      );
+      if (keepHostname) {
+        this.hostName = newHostName ?? "";
+        this.refreshClick();
+      }
+    }
+  }
 }
 
 interface ApiData {
@@ -135,6 +164,15 @@ div {
   margin-top: 1rem; */
 /* font-size: 150%; */
 /* } */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+.setup-gear {
+  /* align-self: flex-end; */
+  cursor: pointer;
+}
 
 .attached-client {
   font-weight: bold;
