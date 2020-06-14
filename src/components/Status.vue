@@ -98,7 +98,9 @@ export default class Status extends Vue {
           if (response.ok) {
             response.json().then((data: ApiData) => {
               this.connected = true;
-              this.setNewHostname(data.HostName);
+              if (!this.hostName) {
+                this.hostName = data.HostName;
+              }
               console.info(this);
               console.info(
                 "data.HostName, this.hostName",
@@ -125,15 +127,6 @@ export default class Status extends Vue {
       this.setUpTimer();
     }
   }
-  setNewHostname(newHostName: string) {
-    if (
-      this.hostName !== newHostName &&
-      `http://${this.hostName}` !== newHostName &&
-      `https://${this.hostName}` !== newHostName
-    ) {
-      this.hostName = newHostName;
-    }
-  }
   refreshClick() {
     this.clearTimer();
     this.getStatus();
@@ -152,10 +145,10 @@ export default class Status extends Vue {
       this.hostName
     );
     if (newHostName != null && newHostName != this.hostName) {
-      let keepHostname = window.confirm(
+      let useNewHostname = window.confirm(
         `Use "${newHostName}" instead of "${this.hostName}"?`
       );
-      if (keepHostname) {
+      if (useNewHostname) {
         this.hostName = newHostName ?? "";
         this.refreshClick();
       }
