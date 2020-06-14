@@ -101,12 +101,6 @@ export default class Status extends Vue {
               if (!this.hostName) {
                 this.hostName = data.HostName;
               }
-              console.info(this);
-              console.info(
-                "data.HostName, this.hostName",
-                data.HostName,
-                this.hostName
-              );
               this.isRunning = data.NoMachineRunning;
               this.hasClient = data.ClientAttached;
             });
