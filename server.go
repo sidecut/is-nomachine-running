@@ -50,7 +50,13 @@ func main() {
 	// e.GET("/", Index)
 	e.Static("/", "dist")
 
-	e.Logger.Fatal(e.Start(":80"))
+	// Start port 80
+	go func(c *echo.Echo) {
+		e.Logger.Fatal(e.Start(":80"))
+	}(e)
+
+	// Start port 443
+	e.Logger.Fatal(e.StartAutoTLS(":443"))
 }
 
 // Template struct
