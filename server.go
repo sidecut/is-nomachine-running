@@ -43,8 +43,8 @@ func main() {
 	e.Use(middleware.Gzip())
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
-	e.GET("/", Index)
-	e.Static("/", "public")
+	// e.GET("/", Index)
+	e.Static("/", "dist")
 
 	// e.GET("/", func(c echo.Context) error {
 	// 	return c.String(http.StatusOK, "Hello, World!")
