@@ -41,7 +41,10 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 	e.Use(middleware.Gzip())
-	e.Use(middleware.CORS())
+
+	corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
+	e.Use(middleware.CORSWithConfig(corsConfig))
+
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
 	// e.GET("/", Index)
