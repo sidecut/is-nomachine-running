@@ -98,7 +98,7 @@ export default class Status extends Vue {
           if (response.ok) {
             response.json().then((data: ApiData) => {
               this.connected = true;
-              this.hostName = data.HostName;
+              this.setNewHostname(data.HostName);
               console.info(this);
               console.info(
                 "data.HostName, this.hostName",
@@ -123,6 +123,15 @@ export default class Status extends Vue {
       this.loading = false;
       this.connected = false;
       this.setUpTimer();
+    }
+  }
+  setNewHostname(newHostName: string) {
+    if (
+      this.hostName !== newHostName &&
+      `http://${this.hostName}` !== newHostName &&
+      `https://${this.hostName}` !== newHostName
+    ) {
+      this.hostName = newHostName;
     }
   }
   refreshClick() {
