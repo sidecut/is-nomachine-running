@@ -138,7 +138,10 @@ export default class Status extends Vue {
   }
 
   settingsClick() {
-    let newHostName = window.prompt("Enter hostname", this.hostName);
+    let newHostName = window.prompt(
+      "Enter hostname, with optional leading http:// or https:// and optional port",
+      this.hostName
+    );
     if (newHostName != null && newHostName != this.hostName) {
       let keepHostname = window.confirm(
         `Use "${newHostName}" instead of "${this.hostName}"?`
