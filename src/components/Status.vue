@@ -44,11 +44,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
 export default class Status extends Vue {
-  _hostName = "";
+  hostName = "";
   initialized = false;
   connected = true;
   isRunning = false;
@@ -56,23 +56,16 @@ export default class Status extends Vue {
   loading = false;
   timerHandle = -1;
 
-  get hostName() {
-    return this._hostName;
-  }
-
-  set hostName(value: string) {
-    this._hostName = value;
-    if (value) {
-      localStorage.setItem("hostName", value);
+  @Watch("hostName")
+  storeHostName(newValue: string, oldValue: string) {
+    if (newValue) {
+      localStorage.setItem("hostName", newValue);
     } else {
       localStorage.removeItem("hostName");
     }
 
-    document.title = `${value} NoMachine status`;
+    document.title = `${newValue} NoMachine status`;
   }
-
-  // TODO: handle page title
-  // <title>NoMachine status on {{.HostName}}</title>
 
   mounted() {
     this.getStatus();
@@ -89,7 +82,7 @@ export default class Status extends Vue {
               this.hostName = data.HostName;
               console.info(this);
               console.info(
-                "data.HostName, this.HostName",
+                "data.HostName, this.hostName",
                 data.HostName,
                 this.hostName
               );
