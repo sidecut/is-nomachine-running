@@ -30,16 +30,10 @@
     <button
       v-if="initialized"
       :disabled="loading"
-      class="loading-spinner refresh-button"
+      class="refresh-button"
       @click="refreshClick"
     >
-      <span v-show="!loading">Refresh</span>
-      <img
-        v-show="loading"
-        src="Spinner-1s-200px.svg"
-        alt="loading"
-        class="loading-spinner"
-      />
+      Refresh
     </button>
   </div>
 </template>
@@ -161,11 +155,12 @@ div {
   color: red;
 }
 .loading-spinner {
-  height: 28px;
+  height: 28pt;
   vertical-align: bottom;
 }
 .refresh-button {
   margin-top: 2rem;
+  height: 2rem;
   width: 4rem;
 }
 .hidden {
