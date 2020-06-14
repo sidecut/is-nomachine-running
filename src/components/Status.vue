@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 :class="{error: !connected}">
+    <h2 :class="{ error: !connected }">
       NoMachine status on {{ hostName }}:
       <span v-show="loading">
         <img src="Spinner-1s-200px.svg" alt="loading" class="loading-spinner" />
@@ -8,23 +8,37 @@
     </h2>
     <div v-if="initialized">
       <div v-if="connected" style="font-size: 150%;">
-        <div v-if="isRunning" class="host-running">NoMachine host process is running.</div>
-        <div v-if="isRunning">
-          <div
-            v-if="hasClient"
-            class="attached-client"
-          >A client IS attached -- use caution when connecting</div>
-          <div v-else class="no-attached-client">No client is attached -- free to connect</div>
+        <div v-if="isRunning" class="host-running">
+          NoMachine host process is running.
         </div>
-        <div v-else class="host-not-running">NoMachine host process is NOT running.</div>
+        <div v-if="isRunning">
+          <div v-if="hasClient" class="attached-client">
+            A client IS attached -- use caution when connecting
+          </div>
+          <div v-else class="no-attached-client">
+            No client is attached -- free to connect
+          </div>
+        </div>
+        <div v-else class="host-not-running">
+          NoMachine host process is NOT running.
+        </div>
       </div>
       <div v-else style="font-size: 150%;">
         <div class="error">Can't get status from {{ hostName }}</div>
       </div>
     </div>
-    <button :disabled="loading" class="loading-spinner refresh-button" @click="refreshClick">
+    <button
+      :disabled="loading"
+      class="loading-spinner refresh-button"
+      @click="refreshClick"
+    >
       <span v-show="!loading">Refresh</span>
-      <img v-show="loading" src="Spinner-1s-200px.svg" alt="loading" class="loading-spinner" />
+      <img
+        v-show="loading"
+        src="Spinner-1s-200px.svg"
+        alt="loading"
+        class="loading-spinner"
+      />
     </button>
   </div>
 </template>
@@ -33,14 +47,29 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class HelloWorld extends Vue {
-  hostName = "";
+export default class Status extends Vue {
+  _hostName = "";
   initialized = false;
   connected = true;
   isRunning = false;
   hasClient = false;
   loading = false;
   timerHandle = -1;
+
+  get hostName() {
+    return this._hostName;
+  }
+
+  set hostName(value: string) {
+    this._hostName = value;
+    if (value) {
+      localStorage.setItem("hostName", value);
+    } else {
+      localStorage.removeItem("hostName");
+    }
+
+    document.title = `${value} NoMachine status`;
+  }
 
   // TODO: handle page title
   // <title>NoMachine status on {{.HostName}}</title>
@@ -53,17 +82,23 @@ export default class HelloWorld extends Vue {
     try {
       this.loading = true;
       fetch("./api")
-        .then(response => {
+        .then((response) => {
           if (response.ok) {
-            response.json().then(data => {
+            response.json().then((data: ApiData) => {
               this.connected = true;
               this.hostName = data.HostName;
+              console.info(this);
+              console.info(
+                "data.HostName, this.HostName",
+                data.HostName,
+                this.hostName
+              );
               this.isRunning = data.NoMachineRunning;
               this.hasClient = data.ClientAttached;
             });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.connected = false;
         })
         .finally(() => {
@@ -89,6 +124,12 @@ export default class HelloWorld extends Vue {
   setUpTimer() {
     this.timerHandle = window.setTimeout(this.getStatus, 45000);
   }
+}
+
+interface ApiData {
+  HostName: string;
+  NoMachineRunning: boolean;
+  ClientAttached: boolean;
 }
 </script>
 
