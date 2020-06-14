@@ -2,9 +2,9 @@
   <div>
     <h2 :class="{ error: !connected }">
       NoMachine status on {{ hostName }}:
-      <div :class="{ hidden: !loading }">
+      <span v-show="loading">
         <img src="Spinner-1s-200px.svg" alt="loading" class="loading-spinner" />
-      </div>
+      </span>
     </h2>
     <div v-if="initialized">
       <div v-if="connected" style="font-size: 150%;">
@@ -166,8 +166,5 @@ div {
 .refresh-button {
   margin-top: 2rem;
   width: 4rem;
-}
-.hidden {
-  visibility: hidden;
 }
 </style>
