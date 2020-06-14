@@ -56,6 +56,10 @@ export default class Status extends Vue {
   loading = false;
   timerHandle = -1;
 
+  created() {
+    this.hostName = localStorage.getItem("hostName") ?? "";
+  }
+
   @Watch("hostName")
   storeHostName(newValue: string, oldValue: string) {
     if (newValue) {
