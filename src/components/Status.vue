@@ -28,6 +28,7 @@
       </div>
     </div>
     <button
+      v-if="initialized"
       :disabled="loading"
       class="loading-spinner refresh-button"
       @click="refreshClick"
