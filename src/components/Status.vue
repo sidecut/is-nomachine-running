@@ -12,7 +12,7 @@
           />
         </span>
       </div>
-      <div class="setup-gear" @click="settingsClick">⚙️</div>
+      <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
     <div v-if="initialized">
       <div v-if="connected" style="font-size: 150%;">
