@@ -5,47 +5,37 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/gin-gonic/gin"
 )
 
 // Hello just outputs "Hello, world" using an HTML template
-func Hello(c echo.Context) error {
-	return c.Render(http.StatusOK, "hello", "World")
+func Hello(c *gin.Context) {
+	c.HTML(http.StatusOK, "hello", "World")
 }
 
-func statusAPI(c echo.Context) error {
+func statusAPI(c *gin.Context) {
 	status, err := getStatus()
 	if err != nil {
 		// TODO: log this error
-		return err
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
-	return c.JSON(http.StatusOK, status)
+	c.JSON(http.StatusOK, status)
 }
 
 func main() {
-	t := &Template{
-		templates: template.Must(template.ParseGlob("views/*.html")),
-	}
+	r := gin.Default()
+	// r.Use(middleware.Gzip())
 
-	e := echo.New()
-	e.Renderer = t
-	e.Use(middleware.Gzip())
+	// corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
+	// r.Use(middleware.CORSWithConfig(corsConfig))
 
-	corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
-	e.Use(middleware.CORSWithConfig(corsConfig))
-
-	e.GET("/hello", Hello)
-	e.GET("/api", statusAPI)
-	e.Static("/", "dist")
+	r.GET("/hello", Hello)
+	r.GET("/api", statusAPI)
+	r.Static("/", "dist")
 
 	// Start port 80
-	go func(c *echo.Echo) {
-		e.Logger.Fatal(e.Start(":80"))
-	}(e)
-
-	// Start port 443
-	e.Logger.Fatal(e.StartAutoTLS(":443"))
+	r.Run()
 }
 
 // Template struct
@@ -54,6 +44,6 @@ type Template struct {
 }
 
 // Render is used by Echo handler funcs
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
+func (t *Template) Render(w io.Writer, name string, data interface{}, c *gin.Context) {
+	t.templates.ExecuteTemplate(w, name, data)
 }
