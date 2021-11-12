@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// Hello just outputs "hello, world" using an HTML template
+// Hello just outputs "Hello, world" using an HTML template
 func Hello(c echo.Context) error {
 	return c.Render(http.StatusOK, "hello", "World")
 }
