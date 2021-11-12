@@ -14,16 +14,6 @@ func Hello(c echo.Context) error {
 	return c.Render(http.StatusOK, "hello", "World")
 }
 
-// Index writes the status of NoMachine
-func Index(c echo.Context) error {
-	status, err := getStatus()
-	if err != nil {
-		// TODO: log this error
-		return err
-	}
-	return c.Render(http.StatusOK, "index", status)
-}
-
 func statusAPI(c echo.Context) error {
 	status, err := getStatus()
 	if err != nil {
@@ -47,7 +37,6 @@ func main() {
 
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
-	// e.GET("/", Index)
 	e.Static("/", "dist")
 
 	// Start port 80
