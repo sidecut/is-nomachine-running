@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 :class="{ error: !connected, header: true }">
+    <h2 :class="{ error: !connection, header: true }">
       <div>&nbsp;</div>
       <div>
         NoMachine status on {{ hostName }}:
@@ -15,7 +15,7 @@
       <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
     <div v-if="initialized">
-      <div v-if="connected" style="font-size: 150%">
+      <div v-if="connection" style="font-size: 150%">
         <div v-if="isRunning" class="host-running">
           NoMachine host process is running.
         </div>
@@ -53,9 +53,6 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 export default class Status extends Vue {
   hostName = "";
   initialized = false;
-  public get connected() {
-    return !!this.connection;
-  }
   isRunning = false;
   hasClient = false;
   loading = false;
