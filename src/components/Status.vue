@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 :class="{ error: !connection, header: true }">
+    <h2 :class="{ error: !connected, header: true }">
       <div>&nbsp;</div>
       <div>
         NoMachine status on {{ hostName }}:
