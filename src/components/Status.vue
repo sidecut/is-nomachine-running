@@ -15,7 +15,7 @@
       <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
     <div v-if="initialized">
-      <div v-if="connected" style="font-size: 150%">
+      <div v-if="connection" style="font-size: 150%">
         <div v-if="isRunning" class="host-running">
           NoMachine host process is running.
         </div>
@@ -53,7 +53,6 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 export default class Status extends Vue {
   hostName = "";
   initialized = false;
-  connected = true;
   isRunning = false;
   hasClient = false;
   loading = false;
@@ -99,9 +98,7 @@ export default class Status extends Vue {
             response.json().then(this.handleApiData);
           }
         })
-        .catch((err) => {
-          this.connected = false;
-        })
+        .catch((err) => {})
         .finally(() => {
           this.initialized = true;
           this.loading = false;
@@ -110,7 +107,6 @@ export default class Status extends Vue {
     } catch (err) {
       this.initialized = true;
       this.loading = false;
-      this.connected = false;
       this.setupSocket();
     }
   }
@@ -142,7 +138,6 @@ export default class Status extends Vue {
     this.handleApiData(data);
   }
   handleApiData(data: ApiData) {
-    this.connected = true;
     if (!this.hostName) {
       this.hostName = data.HostName;
     }
