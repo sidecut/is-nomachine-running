@@ -39,6 +39,7 @@ func main() {
 	e.GET("/api", statusAPI)
 	e.Static("/test-ws", "static")
 	e.GET("/test-ws/ws", serveWs)
+	e.GET("/ws", serveWs)
 	e.Static("/", "dist")
 
 	// Start port 80
