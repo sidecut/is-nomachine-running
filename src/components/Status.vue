@@ -104,20 +104,9 @@ export default class Status extends Vue {
   refreshClick() {
     this.dispatch(SyntheticEvent.Connecting);
   }
-  clearConnection() {
-    if (this.connection) {
-      try {
-        this.connection.close();
-      } finally {
-        this.connection = undefined;
-        this.state = this.states_waiting;
-        this.$forceUpdate();
-      }
-    }
-  }
   onCloseConnection() {
     console.warn("Connection closed");
-    this.clearConnection();
+    this.dispatch(SyntheticEvent.SocketError);
   }
 
   dispatch(evt: SyntheticEvent) {
@@ -156,6 +145,17 @@ export default class Status extends Vue {
       }
     };
 
+    const clearConnection = () => {
+      if (this.connection) {
+        try {
+          this.connection.close();
+        } finally {
+          this.connection = undefined;
+          this.$forceUpdate();
+        }
+      }
+    };
+
     switch (evt) {
       case SyntheticEvent.Connecting:
         clearTimer();
@@ -170,8 +170,8 @@ export default class Status extends Vue {
         break;
 
       case SyntheticEvent.SocketError:
-        console.log("Lost connection.  Waiting to reconnect");
-
+        console.log(`Lost connection at ${Date()}.  Waiting to reconnect`);
+        clearConnection();
         startTimer();
         this.state = this.states_waiting;
         break;
