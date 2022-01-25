@@ -49,6 +49,12 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 
+enum SyntheticEvent {
+  Connecting,
+  Connected,
+  SocketError,
+}
+
 @Component
 export default class Status extends Vue {
   readonly states_connecting = "CONNECTING";
@@ -62,6 +68,7 @@ export default class Status extends Vue {
   hasClient = false;
   loading = false;
   connection?: WebSocket;
+  timer?: number;
 
   created() {
     this.hostName = localStorage.getItem("hostName") ?? "";
@@ -79,7 +86,7 @@ export default class Status extends Vue {
   }
 
   mounted() {
-    this.setupSocket();
+    this.dispatch(SyntheticEvent.Connecting);
   }
 
   get apiAddress(): string {
@@ -94,33 +101,8 @@ export default class Status extends Vue {
     }
   }
 
-  getStatus() {
-    try {
-      this.loading = true;
-      fetch(this.apiAddress)
-        .then((response) => {
-          if (response.ok) {
-            response.json().then(this.handleApiData);
-          }
-        })
-        .catch((err) => {
-          // this.connected = false;
-        })
-        .finally(() => {
-          this.initialized = true;
-          this.loading = false;
-          this.setupSocket();
-        });
-    } catch (err) {
-      this.initialized = true;
-      this.loading = false;
-      // this.connected = false;
-      this.setupSocket();
-    }
-  }
   refreshClick() {
-    this.clearConnection();
-    this.setupSocket();
+    this.dispatch(SyntheticEvent.Connecting);
   }
   clearConnection() {
     if (this.connection) {
@@ -137,21 +119,59 @@ export default class Status extends Vue {
     console.warn("Connection closed");
     this.clearConnection();
   }
-  setupSocket() {
-    try {
-      this.state = this.states_connecting;
-      this.$forceUpdate();
 
-      var socketUrl = new URL(window.location.toString());
-      socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
-      socketUrl.pathname = "/ws";
-      this.connection = new WebSocket(socketUrl.toString());
-      console.log(`Connected to ${socketUrl.toString()}`);
-      this.connection.onmessage = this.handleNewSocketMessage;
-      this.connection.onclose = this.onCloseConnection;
-      this.state = this.states_connected;
-    } finally {
-      this.$forceUpdate();
+  dispatch(evt: SyntheticEvent) {
+    const setupSocket = () => {
+      try {
+        this.state = this.states_connecting;
+        this.$forceUpdate();
+
+        var socketUrl = new URL(window.location.toString());
+        socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
+        socketUrl.pathname = "/ws";
+        this.connection = new WebSocket(socketUrl.toString());
+        console.log(`Connected to ${socketUrl.toString()}`);
+
+        this.dispatch(SyntheticEvent.Connected);
+      } catch (err) {
+        this.dispatch(SyntheticEvent.SocketError);
+      } finally {
+        this.$forceUpdate();
+      }
+    };
+
+    const startTimer = () => {
+      this.state = this.states_waiting;
+      if (!this.timer) {
+        this.timer = window.setTimeout(() => {
+          window.location.reload();
+        }, 30000);
+      }
+    };
+
+    const clearTimer = () => {
+      if (this.timer) {
+        window.clearTimeout(this.timer);
+        this.timer = undefined;
+      }
+    };
+
+    switch (evt) {
+      case SyntheticEvent.Connecting:
+        clearTimer();
+        setupSocket();
+
+      case SyntheticEvent.Connected:
+        clearTimer();
+        this.connection!.onmessage = this.handleNewSocketMessage;
+        this.connection!.onclose = this.onCloseConnection;
+        this.state = this.states_connected;
+
+      case SyntheticEvent.SocketError:
+        console.log("Lost connection.  Waiting to reconnect");
+
+        startTimer();
+        this.state = this.states_waiting;
     }
   }
 
