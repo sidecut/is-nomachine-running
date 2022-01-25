@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 :class="{ error: !connection, header: true }">
+    <h2 :class="{ error: !!!connection, header: true }">
       <div>&nbsp;</div>
       <div>
         NoMachine status on {{ hostName }}:
@@ -15,7 +15,7 @@
       <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
     <div v-if="initialized">
-      <div v-if="connection" style="font-size: 150%">
+      <div v-if="!!connection" style="font-size: 150%">
         <div v-if="isRunning" class="host-running">
           NoMachine host process is running.
         </div>
