@@ -133,7 +133,7 @@ export default class Status extends Vue {
     this.connection = new WebSocket(socketUrl.toString());
     console.log(`Connected to ${socketUrl.toString()}`);
     this.connection.onmessage = this.handleNewSocketMessage;
-    // this.connection.onclose = this.refreshClick;
+    this.connection.onclose = this.clearConnection;
   }
 
   handleNewSocketMessage(ev: MessageEvent) {
