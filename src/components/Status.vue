@@ -123,6 +123,7 @@ export default class Status extends Vue {
         this.connection.close();
       } finally {
         this.connection = undefined;
+        this.$forceUpdate();
       }
     }
   }
