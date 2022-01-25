@@ -53,7 +53,9 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 export default class Status extends Vue {
   hostName = "";
   initialized = false;
-  connected = true;
+  public get connected() {
+    return !!this.connection;
+  }
   isRunning = false;
   hasClient = false;
   loading = false;
@@ -100,7 +102,7 @@ export default class Status extends Vue {
           }
         })
         .catch((err) => {
-          this.connected = false;
+          // this.connected = false;
         })
         .finally(() => {
           this.initialized = true;
@@ -110,7 +112,7 @@ export default class Status extends Vue {
     } catch (err) {
       this.initialized = true;
       this.loading = false;
-      this.connected = false;
+      // this.connected = false;
       this.setupSocket();
     }
   }
@@ -142,7 +144,7 @@ export default class Status extends Vue {
     this.handleApiData(data);
   }
   handleApiData(data: ApiData) {
-    this.connected = true;
+    // this.connected = true;
     if (!this.hostName) {
       this.hostName = data.HostName;
     }
