@@ -126,6 +126,10 @@ export default class Status extends Vue {
       }
     }
   }
+  onCloseConnection() {
+    console.warn("Connection closed");
+    this.clearConnection();
+  }
   setupSocket() {
     var socketUrl = new URL(window.location.toString());
     socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
@@ -133,7 +137,7 @@ export default class Status extends Vue {
     this.connection = new WebSocket(socketUrl.toString());
     console.log(`Connected to ${socketUrl.toString()}`);
     this.connection.onmessage = this.handleNewSocketMessage;
-    this.connection.onclose = this.clearConnection;
+    this.connection.onclose = this.onCloseConnection;
   }
 
   handleNewSocketMessage(ev: MessageEvent) {
