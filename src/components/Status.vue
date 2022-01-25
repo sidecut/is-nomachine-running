@@ -132,13 +132,17 @@ export default class Status extends Vue {
     this.clearConnection();
   }
   setupSocket() {
-    var socketUrl = new URL(window.location.toString());
-    socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
-    socketUrl.pathname = "/ws";
-    this.connection = new WebSocket(socketUrl.toString());
-    console.log(`Connected to ${socketUrl.toString()}`);
-    this.connection.onmessage = this.handleNewSocketMessage;
-    this.connection.onclose = this.onCloseConnection;
+    try {
+      var socketUrl = new URL(window.location.toString());
+      socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
+      socketUrl.pathname = "/ws";
+      this.connection = new WebSocket(socketUrl.toString());
+      console.log(`Connected to ${socketUrl.toString()}`);
+      this.connection.onmessage = this.handleNewSocketMessage;
+      this.connection.onclose = this.onCloseConnection;
+    } finally {
+      this.$forceUpdate();
+    }
   }
 
   handleNewSocketMessage(ev: MessageEvent) {
