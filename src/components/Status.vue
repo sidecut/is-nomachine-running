@@ -160,18 +160,21 @@ export default class Status extends Vue {
       case SyntheticEvent.Connecting:
         clearTimer();
         setupSocket();
+        break;
 
       case SyntheticEvent.Connected:
         clearTimer();
         this.connection!.onmessage = this.handleNewSocketMessage;
         this.connection!.onclose = this.onCloseConnection;
         this.state = this.states_connected;
+        break;
 
       case SyntheticEvent.SocketError:
         console.log("Lost connection.  Waiting to reconnect");
 
         startTimer();
         this.state = this.states_waiting;
+        break;
     }
   }
 
