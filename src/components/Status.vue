@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 :class="{ error: !!!connection, header: true }">
+    <h2 :class="{ error: state != states_connected, header: true }">
       <div>&nbsp;</div>
       <div>
         NoMachine status on {{ hostName }}:
@@ -14,8 +14,8 @@
       </div>
       <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
-    <div v-if="initialized">
-      <div v-if="!!connection" style="font-size: 150%">
+    <div v-if="state != states_waiting">
+      <div v-if="state == states_connected" style="font-size: 150%">
         <div v-if="isRunning" class="host-running">
           NoMachine host process is running.
         </div>
@@ -51,6 +51,11 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
 export default class Status extends Vue {
+  readonly states_connecting = "CONNECTING";
+  readonly states_connected = "CONNECTED";
+  readonly states_waiting = "WAITING";
+
+  state = this.states_connecting;
   hostName = "";
   initialized = false;
   isRunning = false;
@@ -123,6 +128,7 @@ export default class Status extends Vue {
         this.connection.close();
       } finally {
         this.connection = undefined;
+        this.state = this.states_waiting;
         this.$forceUpdate();
       }
     }
@@ -133,6 +139,9 @@ export default class Status extends Vue {
   }
   setupSocket() {
     try {
+      this.state = this.states_connecting;
+      this.$forceUpdate();
+
       var socketUrl = new URL(window.location.toString());
       socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
       socketUrl.pathname = "/ws";
@@ -140,6 +149,7 @@ export default class Status extends Vue {
       console.log(`Connected to ${socketUrl.toString()}`);
       this.connection.onmessage = this.handleNewSocketMessage;
       this.connection.onclose = this.onCloseConnection;
+      this.state = this.states_connected;
     } finally {
       this.$forceUpdate();
     }
