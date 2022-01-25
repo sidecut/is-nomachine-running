@@ -23,29 +23,48 @@ func serveWs(c echo.Context) (err error) {
 		return
 	}
 
-	go writer(ws, c)
+	go func() {
+		defer ws.Close()
+		writer(ws, c)
+	}()
 	// reader(ws)
 
 	return
 }
 
 func writer(ws *websocket.Conn, c echo.Context) {
-	defer ws.Close()
-	statusTicker := time.NewTicker(10 * time.Second)
+	statusTicker := time.NewTicker(time.Second)
 	defer statusTicker.Stop()
+
+	lastStatus, err := getStatus()
+	if err != nil {
+		c.Logger().Error(err)
+		return
+	}
+	if err := writeStatusToWebsocket(lastStatus, ws, c); err != nil {
+		return
+	}
+
 	for {
 		select {
 		case <-statusTicker.C:
-			if err := writeStatusToWebsocket(ws, c); err != nil {
+			newStatus, err := getStatus()
+			if err != nil {
+				c.Logger().Error(err)
 				break
+			}
+			if newStatus != lastStatus {
+				lastStatus = newStatus
+				if err := writeStatusToWebsocket(lastStatus, ws, c); err != nil {
+					break
+				}
 			}
 		}
 	}
 }
 
 // writeStatusToWebsocket writes the status to one web socket
-func writeStatusToWebsocket(ws *websocket.Conn, c echo.Context) (err error) {
-	status := currentStatus
+func writeStatusToWebsocket(status nomachineStatus, ws *websocket.Conn, c echo.Context) (err error) {
 	statusJsonBytes, err := json.Marshal(status)
 	if err != nil {
 		c.Logger().Error(err)
