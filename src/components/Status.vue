@@ -140,6 +140,9 @@ export default class Status extends Vue {
   }
 
   handleNewSocketMessage(ev: MessageEvent) {
+    this.initialized = true;
+    this.loading = false;
+
     const data = <ApiData>ev.data;
     this.handleApiData(data);
   }
