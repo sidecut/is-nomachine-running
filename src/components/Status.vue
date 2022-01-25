@@ -115,7 +115,7 @@ export default class Status extends Vue {
   }
   refreshClick() {
     this.clearConnection();
-    Vue.nextTick(this.setupSocket);
+    this.setupSocket();
   }
   clearConnection() {
     if (this.connection) {
