@@ -4,38 +4,41 @@ package main
 
 import "sync"
 
+type Subscriber[Message any] struct {
+}
+
 // Broadcaster is the struct which encompasses broadcasting
-type Broadcaster struct {
+type Broadcaster[Message any] struct {
 	cond        *sync.Cond
-	subscribers map[interface{}]func(interface{})
-	message     interface{}
+	subscribers map[Subscriber[Message]]func(Message)
+	message     Message
 	running     bool
 }
 
 // SetupBroadcaster gives the broadcaster object to be used further in messaging
-func SetupBroadcaster() *Broadcaster {
+func SetupBroadcaster[Message any]() *Broadcaster[Message] {
 
-	return &Broadcaster{
+	return &Broadcaster[Message]{
 		cond:        sync.NewCond(&sync.RWMutex{}),
-		subscribers: map[interface{}]func(interface{}){},
+		subscribers: map[Subscriber[Message]]func(Message){},
 	}
 }
 
 // Subscribe let others enroll in broadcast event!
-func (b *Broadcaster) Subscribe(id interface{}, f func(input interface{})) {
+func (b *Broadcaster[Message]) Subscribe(id Subscriber[Message], f func(input Message)) {
 
 	b.subscribers[id] = f
 }
 
 // Unsubscribe stop receiving broadcasting
-func (b *Broadcaster) Unsubscribe(id interface{}) {
+func (b *Broadcaster[Message]) Unsubscribe(id Subscriber[Message]) {
 	b.cond.L.Lock()
 	delete(b.subscribers, id)
 	b.cond.L.Unlock()
 }
 
 // Publish publishes the message
-func (b *Broadcaster) Publish(message interface{}) {
+func (b *Broadcaster[Message]) Publish(message Message) {
 	go func() {
 		b.cond.L.Lock()
 
@@ -46,7 +49,7 @@ func (b *Broadcaster) Publish(message interface{}) {
 }
 
 // Start the main broadcasting event
-func (b *Broadcaster) Start() {
+func (b *Broadcaster[Message]) Start() {
 	b.running = true
 	for b.running {
 		b.cond.L.Lock()
@@ -62,6 +65,6 @@ func (b *Broadcaster) Start() {
 }
 
 // Stop broadcasting event
-func (b *Broadcaster) Stop() {
+func (b *Broadcaster[Message]) Stop() {
 	b.running = false
 }
