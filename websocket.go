@@ -33,7 +33,7 @@ func serveWs(c echo.Context) (err error) {
 }
 
 func writer(ws *websocket.Conn, c echo.Context) {
-	statusTicker := time.NewTicker(time.Second)
+	statusTicker := time.NewTicker(3 * time.Second)
 	defer statusTicker.Stop()
 
 	lastStatus, err := getStatus()
