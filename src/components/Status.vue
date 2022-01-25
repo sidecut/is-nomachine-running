@@ -14,25 +14,25 @@
       </div>
       <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
-    <div v-if="state != states_waiting">
-      <div v-if="state == states_connected" style="font-size: 150%">
-        <div v-if="isRunning" class="host-running">
-          NoMachine host process is running.
+    <div v-if="state == states_waiting" style="font-size: 150%">
+      <div class="error">
+        Not connected to {{ hostName }}. Trying again shortly.
+      </div>
+    </div>
+    <div v-else style="font-size: 150%">
+      <div v-if="isRunning" class="host-running">
+        NoMachine host process is running.
+      </div>
+      <div v-if="isRunning">
+        <div v-if="hasClient" class="attached-client">
+          A client IS attached -- use caution when connecting
         </div>
-        <div v-if="isRunning">
-          <div v-if="hasClient" class="attached-client">
-            A client IS attached -- use caution when connecting
-          </div>
-          <div v-else class="no-attached-client">
-            No client is attached -- free to connect
-          </div>
-        </div>
-        <div v-else class="host-not-running">
-          NoMachine host process is NOT running.
+        <div v-else class="no-attached-client">
+          No client is attached -- free to connect
         </div>
       </div>
-      <div v-else style="font-size: 150%">
-        <div class="error">Can't get status from {{ hostName }}</div>
+      <div v-else class="host-not-running">
+        NoMachine host process is NOT running.
       </div>
     </div>
     <button
