@@ -128,11 +128,12 @@ export default class Status extends Vue {
     }
   }
   setupSocket() {
-    this.connection =
-      window.location.protocol == "https"
-        ? new WebSocket("wss://./ws")
-        : new WebSocket("ws://./ws");
+    var socketUrl = new URL(window.location.toString());
+    socketUrl.protocol = window.location.protocol == "https" ? "wss" : "ws";
+    socketUrl.pathname = "/ws";
+    this.connection = new WebSocket(socketUrl.toString());
     this.connection.onmessage = this.handleNewSocketMessage;
+    // this.connection.onclose = this.refreshClick;
   }
 
   handleNewSocketMessage(ev: MessageEvent) {
