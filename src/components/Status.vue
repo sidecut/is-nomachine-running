@@ -15,7 +15,7 @@
       <div class="setup-gear" @click="settingsClick" tabindex="0">⚙️</div>
     </h2>
     <div v-if="initialized">
-      <div v-if="connected" style="font-size: 150%;">
+      <div v-if="connected" style="font-size: 150%">
         <div v-if="isRunning" class="host-running">
           NoMachine host process is running.
         </div>
@@ -31,7 +31,7 @@
           NoMachine host process is NOT running.
         </div>
       </div>
-      <div v-else style="font-size: 150%;">
+      <div v-else style="font-size: 150%">
         <div class="error">Can't get status from {{ hostName }}</div>
       </div>
     </div>
@@ -57,7 +57,7 @@ export default class Status extends Vue {
   isRunning = false;
   hasClient = false;
   loading = false;
-  timerHandle = -1;
+  connection?: WebSocket;
 
   created() {
     this.hostName = localStorage.getItem("hostName") ?? "";
@@ -75,7 +75,7 @@ export default class Status extends Vue {
   }
 
   mounted() {
-    this.getStatus();
+    this.setupSocket();
   }
 
   get apiAddress(): string {
@@ -96,14 +96,7 @@ export default class Status extends Vue {
       fetch(this.apiAddress)
         .then((response) => {
           if (response.ok) {
-            response.json().then((data: ApiData) => {
-              this.connected = true;
-              if (!this.hostName) {
-                this.hostName = data.HostName;
-              }
-              this.isRunning = data.NoMachineRunning;
-              this.hasClient = data.ClientAttached;
-            });
+            response.json().then(this.handleApiData);
           }
         })
         .catch((err) => {
@@ -112,25 +105,47 @@ export default class Status extends Vue {
         .finally(() => {
           this.initialized = true;
           this.loading = false;
-          this.setUpTimer();
+          this.setupSocket();
         });
     } catch (err) {
       this.initialized = true;
       this.loading = false;
       this.connected = false;
-      this.setUpTimer();
+      this.setupSocket();
     }
   }
   refreshClick() {
-    this.clearTimer();
-    this.getStatus();
+    this.clearConnection();
+    this.setupSocket();
   }
-  clearTimer() {
-    window.clearTimeout(this.timerHandle);
-    this.timerHandle = -1;
+  clearConnection() {
+    if (this.connection) {
+      try {
+        this.connection.close();
+      } finally {
+        this.connection = undefined;
+      }
+    }
   }
-  setUpTimer() {
-    this.timerHandle = window.setTimeout(this.getStatus, 45000);
+  setupSocket() {
+    this.connection =
+      window.location.protocol == "https"
+        ? new WebSocket("wss://./ws")
+        : new WebSocket("ws://./ws");
+    this.connection.onmessage = this.handleNewSocketMessage;
+  }
+
+  handleNewSocketMessage(ev: MessageEvent) {
+    const data = <ApiData>ev.data;
+    this.handleApiData(data);
+  }
+  handleApiData(data: ApiData) {
+    this.connected = true;
+    if (!this.hostName) {
+      this.hostName = data.HostName;
+    }
+    this.isRunning = data.NoMachineRunning;
+    this.hasClient = data.ClientAttached;
   }
 
   settingsClick() {
