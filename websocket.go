@@ -1,81 +1,63 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
 
 var (
-	// currentStatus     nomachineStatus
-	upgrader = websocket.Upgrader{}
+	currentStatus nomachineStatus
+	upgrader      = websocket.Upgrader{}
 	// statusBroadcaster = SetupBroadcaster[nomachineStatus]()
 )
 
 func serveWs(c echo.Context) (err error) {
 	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
-		return err
-	}
-	defer ws.Close()
-
-	for {
-		doExit := false
-
-		// Write
-		err := ws.WriteMessage(websocket.TextMessage, []byte("Hello, Client!"))
-		if err != nil {
-			c.Logger().Error(err)
-			// doExit = true
-		}
-
-		// Read
-		_, msg, err := ws.ReadMessage()
-		if err != nil {
-			_, ok := err.(*websocket.CloseError)
-			if ok {
-				c.Logger().Info("ws connection closed")
-				doExit = true
-			}
+		if _, ok := err.(websocket.HandshakeError); !ok {
 			c.Logger().Error(err)
 		}
-		fmt.Printf("%s\n", msg)
-
-		if doExit {
-			break
-		}
+		return
 	}
+
+	go writer(ws, c)
+	// reader(ws)
+
 	return
 }
 
-// func writer(ws *websocket.Conn, subscriber *Subscriber[nomachineStatus]) {
-// 	statusTicker := time.NewTicker(10 * time.Second)
-// 	defer func() {
-// 		statusTicker.Stop()
-// 		ws.Close()
-// 	}()
-// 	for {
-// 		select {
-// 		case <-statusTicker.C:
-// 			writeStatusToWebsocket(ws)
-// 		}
-// 	}
-// }
+func writer(ws *websocket.Conn, c echo.Context) {
+	defer ws.Close()
+	statusTicker := time.NewTicker(10 * time.Second)
+	defer statusTicker.Stop()
+	for {
+		select {
+		case <-statusTicker.C:
+			if err := writeStatusToWebsocket(ws, c); err != nil {
+				break
+			}
+		}
+	}
+}
 
-// // writeStatusToWebsocket writes the status to one web socket
-// func writeStatusToWebsocket(ws *websocket.Conn) {
-// 	status := currentStatus.Load()
-// 	statusJsonBytes, err := json.Marshal(status)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return
-// 	}
-// 	ws.SetWriteDeadline(time.Now().Add(time.Minute))
-// 	if err := ws.WriteMessage(websocket.TextMessage, statusJsonBytes); err != nil {
-// 		log.Println(err)
-// 	}
-// }
+// writeStatusToWebsocket writes the status to one web socket
+func writeStatusToWebsocket(ws *websocket.Conn, c echo.Context) (err error) {
+	status := currentStatus
+	statusJsonBytes, err := json.Marshal(status)
+	if err != nil {
+		c.Logger().Error(err)
+		return
+	}
+	ws.SetWriteDeadline(time.Now().Add(time.Minute))
+	if err := ws.WriteMessage(websocket.TextMessage, statusJsonBytes); err != nil {
+		c.Logger().Error(err)
+	}
+
+	return
+}
 
 // func checkStatusTickerHandler(ticker time.Ticker, statusUpdatesChannel chan nomachineStatus) {
 // 	for {

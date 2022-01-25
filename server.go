@@ -38,9 +38,7 @@ func main() {
 	e.GET("/hello", Hello)
 	e.GET("/api", statusAPI)
 	e.Static("/test-ws", "static")
-	if err := e.GET("/test-ws/ws", serveWs); err != nil {
-		// log.Fatal(err)
-	}
+	e.GET("/test-ws/ws", serveWs)
 	e.Static("/", "dist")
 
 	// Start port 80
