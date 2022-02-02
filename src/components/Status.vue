@@ -130,7 +130,7 @@ export default class Status extends Vue {
     this.timerHandle = -1;
   }
   setUpTimer() {
-    this.timerHandle = window.setTimeout(this.getStatus, 30000);
+    this.timerHandle = window.setTimeout(this.getStatus, 15000);
   }
 
   settingsClick() {
