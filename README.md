@@ -42,3 +42,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - [ ] Test on Linux
 - [ ] Test on Windows
 - [ ] Support virtual clients, multiple clients, etc.
+- [ ] Upgrade to Vue 3
