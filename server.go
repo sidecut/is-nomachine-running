@@ -2,58 +2,52 @@ package main
 
 import (
 	"html/template"
-	"io"
-	"net/http"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/iris-contrib/middleware/cors"
+	"github.com/kataras/iris/v12"
 )
 
 // Hello just outputs "Hello, world" using an HTML template
-func Hello(c echo.Context) error {
-	return c.Render(http.StatusOK, "hello", "World")
+func Hello(ctx iris.Context) {
+	ctx.ViewData("name", "World")
+	ctx.View("hello.html")
 }
 
-func statusAPI(c echo.Context) error {
+func statusAPI(ctx iris.Context) {
 	status, err := getStatus()
 	if err != nil {
 		// TODO: log this error
-		return err
+		ctx.StopWithProblem(500, iris.NewProblem().DetailErr(err))
+		return
 	}
-	return c.JSON(http.StatusOK, status)
+	ctx.JSON(status)
 }
 
 func main() {
-	t := &Template{
-		templates: template.Must(template.ParseGlob("views/*.html")),
-	}
+	app := iris.New()
 
-	e := echo.New()
-	e.Renderer = t
-	e.Use(middleware.Gzip())
+	tmpl := iris.HTML("./views", ".html")
+	app.RegisterView(tmpl)
 
-	corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
-	e.Use(middleware.CORSWithConfig(corsConfig))
+	app.Use(iris.Compression)
 
-	e.GET("/hello", Hello)
-	e.GET("/api", statusAPI)
-	e.Static("/", "dist")
+	// corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
+	app.Use(crs)
 
-	// Start port 80
-	go func(c *echo.Echo) {
-		e.Logger.Fatal(e.Start(":80"))
-	}(e)
+	app.Get("/hello", Hello)
+	app.Get("/api", statusAPI)
+	app.HandleDir("/", iris.Dir("./dist"))
 
-	// Start port 443
-	e.Logger.Fatal(e.StartAutoTLS(":443"))
+	// TODO: TLS and logging
+	// e.Logger.Fatal(e.StartAutoTLS(":443"))
+	app.Listen(":80")
 }
 
 // Template struct
 type Template struct {
 	templates *template.Template
-}
-
-// Render is used by Echo handler funcs
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
 }
