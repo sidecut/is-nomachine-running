@@ -3,7 +3,6 @@ module github.com/sidecut/is-nomachine-running
 go 1.18
 
 require (
-	github.com/labstack/echo/v4 v4.6.3
 	github.com/mitchellh/go-ps v1.0.0
 )
 
