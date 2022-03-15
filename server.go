@@ -4,9 +4,6 @@ import (
 	"html/template"
 	"io"
 	"net/http"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 // Hello just outputs "Hello, world" using an HTML template
