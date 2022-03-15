@@ -1,13 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
 )
+
+func init() {
+	viper.SetDefault("port", 80)
+	viper.SetDefault("sslport", 443)
+}
 
 // Hello just outputs "Hello, world" using an HTML template
 func Hello(c echo.Context) error {
@@ -39,13 +46,18 @@ func main() {
 	e.GET("/api", statusAPI)
 	e.Static("/", "dist")
 
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("isno")
+	port := viper.GetInt("port")
+	sslport := viper.GetInt("sslport")
+
 	// Start port 443
 	go func(c *echo.Echo) {
-		e.Logger.Fatal(e.StartAutoTLS(":443"))
+		e.Logger.Fatal(e.StartAutoTLS(fmt.Sprintf(":%v", sslport)))
 	}(e)
 
 	// Start port 80
-	e.Logger.Fatal(e.Start(":80"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", port)))
 }
 
 // Template struct
