@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/template/html"
 )
 
@@ -27,8 +28,7 @@ func main() {
 	app := fiber.New(fiber.Config{Views: engine})
 	app.Use(compress.New())
 
-	// corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
-	// app.Use(middleware.CORSWithConfig(corsConfig))
+	app.Use(cors.New())
 
 	app.Get("/hello", Hello)
 	app.Get("/api", statusAPI)
