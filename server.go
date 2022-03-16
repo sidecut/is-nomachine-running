@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -50,6 +51,9 @@ func main() {
 	viper.SetEnvPrefix("isno")
 	port := viper.GetInt("port")
 	sslport := viper.GetInt("sslport")
+
+	log.Printf("port: %v\n", port)
+	log.Printf("sslport: %v\n", sslport)
 
 	// Start port 443
 	go func(c *echo.Echo) {
