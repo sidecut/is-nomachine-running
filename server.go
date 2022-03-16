@@ -52,8 +52,10 @@ func main() {
 	port := viper.GetInt("port")
 	sslport := viper.GetInt("sslport")
 
-	log.Printf("port: %v\n", port)
-	log.Printf("sslport: %v\n", sslport)
+	oldLevel := e.Logger.Level()
+	e.Logger.SetLevel(log.INFO)
+	e.Logger.Infoj(log.JSON{"port": port, "sslport": sslport})
+	e.Logger.SetLevel(oldLevel)
 
 	// Start port 443
 	go func(c *echo.Echo) {
