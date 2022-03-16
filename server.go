@@ -8,7 +8,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
 	"github.com/spf13/viper"
 )
 
@@ -51,11 +50,6 @@ func main() {
 	viper.SetEnvPrefix("isno")
 	port := viper.GetInt("port")
 	sslport := viper.GetInt("sslport")
-
-	oldLevel := e.Logger.Level()
-	e.Logger.SetLevel(log.INFO)
-	e.Logger.Infoj(log.JSON{"port": port, "sslport": sslport})
-	e.Logger.SetLevel(oldLevel)
 
 	// Start port 443
 	go func(c *echo.Echo) {
