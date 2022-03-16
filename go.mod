@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/labstack/echo/v4 v4.6.3
+	github.com/labstack/gommon v0.3.1
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/spf13/viper v1.10.1
 )
@@ -12,7 +13,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

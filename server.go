@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/spf13/viper"
 )
 
