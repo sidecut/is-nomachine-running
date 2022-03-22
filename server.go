@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/template/html"
 	"github.com/spf13/viper"
 )
@@ -45,6 +46,7 @@ func main() {
 	// sslport := viper.GetInt("sslport")
 
 	app.Use(recover.New())
+	app.Use(requestid.New())
 	app.Use(logger.New())
 
 	app.Get("/hello", Hello)
