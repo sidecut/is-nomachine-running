@@ -47,7 +47,9 @@ func main() {
 
 	app.Use(recover.New())
 	app.Use(requestid.New())
-	app.Use(logger.New())
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
+	}))
 
 	app.Get("/hello", Hello)
 	app.Get("/api", statusAPI)
