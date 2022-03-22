@@ -10,10 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "env": {
-                "ISNO_PORT": "1234",
-                "ISNO_SSLPORT": "2345",
-            },
+            "env": {},
             "args": []
         }
     ]
