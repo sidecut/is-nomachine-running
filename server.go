@@ -41,13 +41,8 @@ func main() {
 	e.GET("/api", statusAPI)
 	e.Static("/", "dist")
 
-	// Start port 443
-	go func(c *echo.Echo) {
-		e.Logger.Fatal(e.StartAutoTLS(":443"))
-	}(e)
-
-	// Start port 80
-	e.Logger.Fatal(e.Start(":80"))
+	// Start server
+	e.Logger.Fatal(e.Start(":1323"))
 }
 
 // Template struct
