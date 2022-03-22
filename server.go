@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/pflag"
 )
+
+var port *int
 
 // Hello just outputs "Hello, world" using an HTML template
 func Hello(c echo.Context) error {
@@ -23,10 +27,16 @@ func statusAPI(c echo.Context) error {
 	return c.JSON(http.StatusOK, status)
 }
 
+func init() {
+	port = pflag.IntP("port", "p", 3123, "Specify port to listen on")
+}
+
 func main() {
 	t := &Template{
 		templates: template.Must(template.ParseGlob("views/*.html")),
 	}
+
+	pflag.Parse()
 
 	e := echo.New()
 	e.Renderer = t
@@ -42,7 +52,7 @@ func main() {
 	e.Static("/", "dist")
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", *port)))
 }
 
 // Template struct
