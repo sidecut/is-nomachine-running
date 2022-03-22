@@ -39,6 +39,7 @@ func main() {
 	e := echo.New()
 	e.Renderer = t
 	e.Use(middleware.Gzip())
+	e.Use(middleware.Logger())
 
 	corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
 	e.Use(middleware.CORSWithConfig(corsConfig))
