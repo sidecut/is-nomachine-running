@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	viper.SetDefault("port", 80)
+	viper.SetDefault("port", 1323)
 }
 
 // Hello just outputs "Hello, world" using an HTML template
