@@ -49,6 +49,9 @@ func main() {
 
 	app.Get("/hello", Hello)
 	app.Get("/api", statusAPI)
+	app.Get("/fatal", func(c *fiber.Ctx) error {
+		panic("Something bad happened")
+	})
 	app.Static("/", "dist")
 
 	// Start port 443
