@@ -1,0 +1,4 @@
+localhost
+
+reverse_proxy localhost:1323
+tls certs/certfile.crt certs/certfile.key
