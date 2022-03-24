@@ -12,8 +12,7 @@ import (
 )
 
 func init() {
-	viper.SetDefault("port", 80)
-	viper.SetDefault("sslport", 443)
+	viper.SetDefault("port", 1323)
 }
 
 // Hello just outputs "Hello, world" using an HTML template
@@ -51,12 +50,6 @@ func main() {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("isno")
 	port := viper.GetInt("port")
-	sslport := viper.GetInt("sslport")
-
-	// Start port 443
-	go func(c *echo.Echo) {
-		e.Logger.Fatal(e.StartAutoTLS(fmt.Sprintf(":%v", sslport)))
-	}(e)
 
 	// Start port 80
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", port)))
