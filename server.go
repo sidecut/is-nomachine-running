@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -31,6 +33,9 @@ func statusAPI(c echo.Context) error {
 }
 
 func main() {
+	log.Println(debug.ReadBuildInfo())
+	log.Println("###")
+
 	t := &Template{
 		templates: template.Must(template.ParseGlob("views/*.html")),
 	}
