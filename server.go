@@ -1,17 +1,20 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
-	"runtime/debug"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 )
+
+//go:embed git-describe.txt
+var gitDescribe string
 
 func init() {
 	viper.SetDefault("port", 80)
@@ -33,8 +36,7 @@ func statusAPI(c echo.Context) error {
 }
 
 func main() {
-	log.Println(debug.ReadBuildInfo())
-	log.Println("###")
+	log.Println(gitDescribe)
 
 	t := &Template{
 		templates: template.Must(template.ParseGlob("views/*.html")),
