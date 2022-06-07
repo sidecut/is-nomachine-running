@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
@@ -36,9 +37,7 @@ func main() {
 	// e.Use(middleware.CORSWithConfig(corsConfig))
 
 	e.GET("/api", statusAPI)
-	e.NoRoute(func(ctx *gin.Context) {
-		e.StaticFS("/", gin.Dir("dist", true))
-	})
+	e.Use(static.Serve("/", static.LocalFile("dist", true)))
 
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("isno")

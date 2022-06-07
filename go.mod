@@ -3,6 +3,7 @@ module github.com/sidecut/is-nomachine-running
 go 1.18
 
 require (
+	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.8.1
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/spf13/viper v1.12.0
