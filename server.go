@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/requestid"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -28,13 +31,11 @@ func statusAPI(c *gin.Context) {
 func main() {
 	e := gin.Default()
 
-	// e := echo.New()
-	// e.Use(middleware.Gzip())
+	e.Use(gzip.Gzip(gzip.DefaultCompression))
 	// e.Use(middleware.Logger())
-	// e.Use(middleware.RequestID())
+	e.Use(requestid.New())
 
-	// corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
-	// e.Use(middleware.CORSWithConfig(corsConfig))
+	e.Use(cors.Default())
 
 	e.GET("/api", statusAPI)
 	e.Use(static.Serve("/", static.LocalFile("dist", true)))
@@ -42,12 +43,6 @@ func main() {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("isno")
 	port := viper.GetInt("port")
-	// sslport := viper.GetInt("sslport")
-
-	// // Start port 443
-	// go func(c *echo.Echo) {
-	// 	e.Logger.Fatal(e.StartAutoTLS(fmt.Sprintf(":%v", sslport)))
-	// }(e)
 
 	// Start port 80
 	e.Run(fmt.Sprintf(":%v", port))
