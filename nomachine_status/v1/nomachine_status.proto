@@ -5,9 +5,9 @@ package nomachine_status.v1;
 message StatusRequest {}
 
 message NomachineStatus {
-  string HostName = 1;
-  bool NoMachineRunning = 2;
-  bool ClientAttached = 3;
+  string host_name = 1;
+  bool no_machine_running = 2;
+  bool client_attached = 3;
 }
 
 service NomachineStatusService {
