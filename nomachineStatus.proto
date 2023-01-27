@@ -2,16 +2,14 @@ syntax = "proto3";
 
 package Blah;
 
-message StatusRequest {
-
-}
+message StatusRequest {}
 
 message NomachineStatus {
-	string HostName       = 1;
-	bool NoMachineRunning = 2;
-	bool ClientAttached   = 3;
+  string HostName = 1;
+  bool NoMachineRunning = 2;
+  bool ClientAttached = 3;
 }
 
 service NomachineStatusService {
-    rpc GetStatus (StatusRequest) returns (NomachineStatus);
+  rpc GetStatus(StatusRequest) returns (NomachineStatus);
 }
