@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package Blah;
+package nomachine_status.v1;
 
 message StatusRequest {}
 
