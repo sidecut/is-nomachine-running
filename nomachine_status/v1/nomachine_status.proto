@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package nomachine_status.v1;
 
+option go_package = "github.com/sidecut/is-nomachine-running";
+
 message GetStatusRequest {}
 
 message GetStatusResponse {
