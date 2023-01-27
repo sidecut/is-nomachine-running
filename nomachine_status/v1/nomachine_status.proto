@@ -12,6 +12,6 @@ message GetStatusResponse {
   bool client_attached = 3;
 }
 
-service GetStatusResponseService {
+service GetStatusService {
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
 }

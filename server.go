@@ -46,7 +46,7 @@ func main() {
 	port := viper.GetInt("port")
 	sslport := viper.GetInt("sslport")
 
-	go func(c *echo.Echo) {
+	go func() {
 		listenOn := "127.0.0.1:8080"
 		listener, err := net.Listen("tcp", listenOn)
 		if err != nil {
@@ -54,12 +54,12 @@ func main() {
 		}
 
 		server := grpc.NewServer()
-		status.RegisterGetStatusResponseServiceServer(server, &statusServiceServer{})
+		status.RegisterGetStatusServiceServer(server, &statusServiceServer{})
 		log.Println("Listening on", listenOn)
 		if err := server.Serve(listener); err != nil {
 			e.Logger.Fatal(fmt.Errorf("failed to serve gRPC server: %w", err))
 		}
-	}(e)
+	}()
 
 	// Start port 443
 	go func(c *echo.Echo) {
@@ -71,7 +71,7 @@ func main() {
 }
 
 type statusServiceServer struct {
-	status.UnimplementedGetStatusResponseServiceServer
+	status.UnimplementedGetStatusServiceServer
 }
 
 func (s *statusServiceServer) GetStatus(ctx context.Context, req *status.GetStatusRequest) (*status.GetStatusResponse, error) {
