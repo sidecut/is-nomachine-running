@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 func init() {
@@ -20,7 +21,11 @@ func statusAPI(c echo.Context) error {
 		// TODO: log this error
 		return err
 	}
-	return c.JSON(http.StatusOK, status)
+	bytes, err := msgpack.Marshal(status)
+	if err != nil {
+		return err
+	}
+	return c.Blob(http.StatusOK, "application/msgpack", bytes)
 }
 
 func main() {
