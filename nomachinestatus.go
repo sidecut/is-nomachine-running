@@ -8,9 +8,9 @@ import (
 )
 
 type nomachineStatus struct {
-	HostName         string `json:"host_name,omitempty"`
-	NoMachineRunning bool   `json:"no_machine_running,omitempty"`
-	ClientAttached   bool   `json:"client_attached,omitempty"`
+	HostName         string `msgpack:",omitempty"`
+	NoMachineRunning bool   `msgpack:",omitempty"`
+	ClientAttached   bool   `msgpack:",omitempty"`
 }
 
 func getFirstProcessByName(name string) (int, error) {
