@@ -99,10 +99,10 @@ export default class Status extends Vue {
             response.json().then((data: ApiData) => {
               this.connected = true;
               if (!this.hostName) {
-                this.hostName = data.HostName;
+                this.hostName = data.host_name;
               }
-              this.isRunning = data.NoMachineRunning;
-              this.hasClient = data.ClientAttached;
+              this.isRunning = data.no_machine_running;
+              this.hasClient = data.client_attached;
             });
           }
         })
@@ -151,9 +151,9 @@ export default class Status extends Vue {
 }
 
 interface ApiData {
-  HostName: string;
-  NoMachineRunning: boolean;
-  ClientAttached: boolean;
+  host_name: string;
+  no_machine_running: boolean;
+  client_attached: boolean;
 }
 </script>
 
