@@ -10,8 +10,8 @@ import (
 )
 
 func init() {
-	viper.SetDefault("port", 80)
-	viper.SetDefault("sslport", 443)
+	viper.SetDefault("PORT", 80)
+	viper.SetDefault("SSLPORT", 443)
 }
 
 func statusAPI(c echo.Context) error {
@@ -36,9 +36,8 @@ func main() {
 	e.Static("/", "dist")
 
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("isno")
-	port := viper.GetInt("port")
-	sslport := viper.GetInt("sslport")
+	port := viper.GetInt("PORT")
+	sslport := viper.GetInt("SSLPORT")
 
 	// Start port 443
 	go func(c *echo.Echo) {
