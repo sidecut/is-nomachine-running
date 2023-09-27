@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/spf13/viper"
 )
 
@@ -39,6 +41,9 @@ func main() {
 	viper.SetEnvPrefix("isno")
 	port := viper.GetInt("port")
 	sslport := viper.GetInt("sslport")
+
+	e.Logger.SetLevel(log.INFO)
+	e.Logger.Infof("*** STARTING PID %v", os.Getpid())
 
 	// Start port 443
 	go func(c *echo.Echo) {
