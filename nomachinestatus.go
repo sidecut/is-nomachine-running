@@ -13,37 +13,38 @@ type nomachineStatus struct {
 	ClientAttached   bool   `json:"client_attached,omitempty"`
 }
 
-func getFirstProcessByName(name string) (int, error) {
+func getFirstProcessByName(name string) (*int, error) {
 	processes, err := ps.Processes()
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 
 	for _, process := range processes {
 		if process.Executable() == name {
-			return process.Pid(), nil
+			pid := process.Pid()
+			return &pid, nil
 		}
 	}
 
-	return -1, errors.New("Could not find process " + name)
+	return nil, errors.New("Could not find process " + name)
 }
 
 // getStatus returns a structure containing information on the status of NoMachine
-func getStatus() (nomachineStatus, error) {
+func getStatus() (*nomachineStatus, error) {
 	hostName, err := os.Hostname()
 	if err != nil {
-		return nomachineStatus{}, err
+		return nil, err
 	}
 	status := nomachineStatus{HostName: hostName}
 
 	noMachinePid, _ := getFirstProcessByName("nxserver.bin")
 	noMachineClientPid, _ := getFirstProcessByName("nxexec")
 
-	if noMachinePid >= 0 {
+	if noMachinePid != nil && *noMachinePid >= 0 {
 		status.NoMachineRunning = true
 	}
-	if noMachineClientPid >= 0 {
+	if noMachineClientPid != nil && *noMachineClientPid >= 0 {
 		status.ClientAttached = true
 	}
-	return status, nil
+	return &status, nil
 }
