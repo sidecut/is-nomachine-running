@@ -52,4 +52,6 @@ func main() {
 
 	// Start port 80
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", port)))
+
+	e.Logger.Warnf("*** STOPPING PID %v", os.Getpid())
 }
