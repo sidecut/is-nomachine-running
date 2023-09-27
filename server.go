@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -51,5 +54,30 @@ func main() {
 	}(e)
 
 	// Start port 80
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", port)))
+	go func() {
+		if err := e.Start(fmt.Sprintf(":%v", port)); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal(err)
+		}
+	}()
+
+	// Labstack graceful shutdown code from https://echo.labstack.com/docs/cookbook/graceful-shutdown
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
+	go func() {
+		for sig := range quit {
+			fmt.Println(sig)
+		}
+	}()
+
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	e.Logger.Warnf("*** STOPPING PID %v", os.Getpid())
 }
