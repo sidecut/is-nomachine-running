@@ -66,12 +66,6 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 
-	go func() {
-		for sig := range quit {
-			fmt.Println(sig)
-		}
-	}()
-
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
