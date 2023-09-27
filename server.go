@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -64,20 +65,15 @@ func main() {
 	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
 	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
 
-	go func() {
-		for sig := range quit {
-			fmt.Println(sig)
-		}
-	}()
+	quitSignal := <-quit
 
-	<-quit
+	e.Logger.Warnf("*** STOPPING PID %v with signal %v", os.Getpid(), quitSignal)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
 	}
-
-	e.Logger.Warnf("*** STOPPING PID %v", os.Getpid())
 }
