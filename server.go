@@ -26,6 +26,7 @@ func statusAPI(c echo.Context) error {
 		// TODO: log this error
 		return err
 	}
+	c.Logger().Debugf("Status: %+v", status)
 	return c.JSON(http.StatusOK, status)
 }
 
@@ -46,7 +47,7 @@ func main() {
 	port := viper.GetInt("port")
 	sslport := viper.GetInt("sslport")
 
-	e.Logger.SetLevel(log.INFO)
+	e.Logger.SetLevel(log.DEBUG)
 	e.Logger.Infof("*** STARTING PID %v", os.Getpid())
 
 	// Start port 443
