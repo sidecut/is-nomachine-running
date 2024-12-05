@@ -13,16 +13,18 @@ let defaultConfig = [
 @Sendable func statusAPI(_ req: Request) throws -> EventLoopFuture<Response> {
     do {
         let statusResult = try getStatus()
-        let status: String
+        let json: Data
         switch statusResult {
         case .success(let noMachineStatus):
-            status = "\(noMachineStatus)"  // Assuming NoMachineStatus conforms to CustomStringConvertible or has a suitable description
+            // send JSON representation of the status
+            json = try JSONEncoder().encode(noMachineStatus)
+            let response = Response(status: .ok, body: .init(data: json))
+            response.headers.replaceOrAdd(name: .contentType, value: "application/json")
+            return req.eventLoop.makeSucceededFuture(response)
+
         case .failure(let error):
             throw error
         }
-        let response = Response(status: .ok, body: .init(string: status))
-        response.headers.replaceOrAdd(name: .contentType, value: "application/json")
-        return req.eventLoop.makeSucceededFuture(response)
     } catch {
         // TODO: log this error
         throw error

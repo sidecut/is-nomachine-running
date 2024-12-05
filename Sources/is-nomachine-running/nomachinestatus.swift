@@ -1,6 +1,6 @@
 import Foundation
 
-struct NoMachineStatus {
+struct NoMachineStatus: Encodable {
     var hostName: String?
     var noMachineRunning: Bool = false
     var clientAttached: Bool = false
