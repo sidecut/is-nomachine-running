@@ -103,6 +103,8 @@ export default class Status extends Vue {
               }
               this.isRunning = data.no_machine_running;
               this.hasClient = data.client_attached;
+            }).catch(err => {
+              reject(err)
             });
           }
         })
