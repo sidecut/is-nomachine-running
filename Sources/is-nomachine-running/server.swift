@@ -10,7 +10,14 @@ let defaultConfig = [
 // Status API handler
 func statusAPI(_ req: Request) throws -> EventLoopFuture<Response> {
     do {
-        let status = try getStatus()
+        let statusResult = try getStatus()
+        let status: String
+        switch statusResult {
+        case .success(let noMachineStatus):
+            status = "\(noMachineStatus)"  // Assuming NoMachineStatus conforms to CustomStringConvertible or has a suitable description
+        case .failure(let error):
+            throw error
+        }
         let response = Response(status: .ok, body: .init(string: status))
         response.headers.replaceOrAdd(name: .contentType, value: "application/json")
         return req.eventLoop.makeSucceededFuture(response)
