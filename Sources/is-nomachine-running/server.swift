@@ -11,7 +11,9 @@ let defaultConfig = [
 func statusAPI(_ req: Request) throws -> EventLoopFuture<Response> {
     do {
         let status = try getStatus()
-        return try JSONResponse(status).encodeResponse(for: req)
+        let response = Response(status: .ok, body: .init(string: status))
+        response.headers.replaceOrAdd(name: .contentType, value: "application/json")
+        return req.eventLoop.makeSucceededFuture(response)
     } catch {
         // TODO: log this error
         throw error
