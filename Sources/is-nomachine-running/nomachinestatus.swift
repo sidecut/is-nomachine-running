@@ -7,15 +7,15 @@ struct NoMachineStatus {
 }
 
 func getFirstProcessByName(_ name: String) -> Int32? {
-    var processes = ProcessInfo.processInfo.processIdentifier
+    // var processes = ProcessInfo.processInfo.processIdentifier
     let task = Process()
     task.launchPath = "/bin/ps"
     task.arguments = ["-A"]
-    
+
     let pipe = Pipe()
     task.standardOutput = pipe
     task.launch()
-    
+
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     if let output = String(data: data, encoding: .utf8) {
         for line in output.components(separatedBy: "\n") {
@@ -32,23 +32,25 @@ func getFirstProcessByName(_ name: String) -> Int32? {
     return nil
 }
 
-func getStatus() -> Result<NoMachineStatus, Error> {
+func getStatus() throws -> Result<NoMachineStatus, Error> {
     var status = NoMachineStatus()
-    
+
     guard let hostName = Host.current().localizedName else {
-        return .failure(NSError(domain: "", code: -1, 
-            userInfo: [NSLocalizedDescriptionKey: "Could not get hostname"]))
+        return .failure(
+            NSError(
+                domain: "", code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Could not get hostname"]))
     }
-    
+
     status.hostName = hostName
-    
-    if let noMachinePid = getFirstProcessByName("nxserver.bin") {
+
+    if let noMachinePid = getFirstProcessByName("nxserver.bin"), noMachinePid > 0 {
         status.noMachineRunning = true
     }
-    
-    if let noMachineClientPid = getFirstProcessByName("nxexec") {
+
+    if let noMachineClientPid = getFirstProcessByName("nxexec"), noMachineClientPid > 0 {
         status.clientAttached = true
     }
-    
+
     return .success(status)
 }
