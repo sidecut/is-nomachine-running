@@ -11,6 +11,9 @@ let package = Package(
             name: "is-nomachine-running",
             targets: ["is-nomachine-running"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.106.7"),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
