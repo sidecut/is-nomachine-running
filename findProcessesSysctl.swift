@@ -2,34 +2,63 @@ import Foundation
 
 func findProcesses(named processName: String) -> [Int32] {
     var pids: [Int32] = []
-    var taskInfo = kinfo_proc()
-    var taskInfoCount = Int(MemoryLayout<kinfo_proc>.size)
-    var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
+    // var taskInfo = kinfo_proc()
+    // var taskInfoCount = Int(MemoryLayout<kinfo_proc>.size)
 
-    let result = sysctl(&mib, UInt32(mib.count), &taskInfo, &taskInfoCount, nil, 0)
+    // largely from https://gaitatzis.medium.com/listing-running-system-processes-using-swift-43e24c20789c
+    var memoryInformationBase = [
+        KERN_PROC,  // get the process id
+        KERN_PROC_ALL,  // get everything including the name
+        // KERN_USER,  // get the user who started the process
+    ]
 
-    if result == 0 {
-        let numberOfProcesses = taskInfoCount / Int(MemoryLayout<kinfo_proc>.size)
-        let processList = UnsafeBufferPointer(start: &taskInfo, count: Int(numberOfProcesses))
+    var bufferSize = 0
+    let bufferSizeResult = sysctl(
+        &memoryInformationBase,
+        UInt32(memoryInformationBase.count),
+        nil,
+        &bufferSize,
+        nil,
+        0
+    )
+    if bufferSizeResult < 0 {
+        print("bufferSizeResult < 0")
+        perror(&errno)
+        return []
+    }
 
-        for var proc in processList {
-            let processID = proc.kp_proc.p_pid
-            let processName = withUnsafePointer(to: &proc.kp_proc.p_comm) {
-                $0.withMemoryRebound(to: CChar.self, capacity: Int(MAXCOMLEN)) {
-                    String(cString: $0)
-                }
-            }
+    let entryCount = bufferSize / MemoryLayout<kinfo_proc>.stride
+    var processList: UnsafeMutablePointer<kinfo_proc>?
+    processList = UnsafeMutablePointer.allocate(capacity: entryCount)
+    defer { processList?.deallocate() }
 
-            if processName == processName {
-                pids.append(processID)
-            }
+    let populateProcessListResult = sysctl(
+        &memoryInformationBase,
+        UInt32(memoryInformationBase.count),
+        processList,
+        &bufferSize,
+        nil,
+        0
+    )
+    if populateProcessListResult < 0 {
+        perror(&errno)
+        return []
+    }
+
+    for index in 0..<entryCount {
+        let process = processList![index]
+        let processId = process.kp_proc.p_pid
+        if processId == 0 {
+            continue
         }
-    } else {
-        print("Error: sysctl failed")
+        let comm = process.kp_proc.p_comm
+        let name = String(cString: Mirror(reflecting: comm).children.map { $0.value as! CChar })
+        print("PID: \(processId), App: \(name)")
+        pids.append(processId)
     }
 
     return pids
 }
 
-let pids = findProcesses(named: "fred")
-print("PIDs of processes named 'fred': \(pids)")
+let pids = findProcesses(named: "zsh")
+print("PIDs of processes named 'zsh': \(pids)")
