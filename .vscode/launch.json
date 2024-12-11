@@ -5,43 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
-      "type": "go",
+      "type": "lldb",
       "request": "launch",
-      "mode": "auto",
-      "program": "${workspaceFolder}",
-      "env": {
-        "ISNO_PORT": "1234",
-        "ISNO_SSLPORT": "2345"
-      },
-      "args": []
+      "args": [],
+      "cwd": "${workspaceFolder:is-nomachine-running}",
+      "name": "Debug is-nomachine-running",
+      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/is-nomachine-running",
+      "preLaunchTask": "swift: Build Debug is-nomachine-running"
     },
     {
       "type": "lldb",
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
-      "name": "Debug App",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/App",
-      "preLaunchTask": "swift: Build Debug App"
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "args": [],
-      "cwd": "${workspaceFolder:is-nomachine-running}",
-      "name": "Release App",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/release/App",
-      "preLaunchTask": "swift: Build Release App"
-    },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Debug findProcessesSysctl",
-      "program": "${workspaceFolder}/findProcessesSysctl.swift",
-      "args": [],
-      "cwd": "${workspaceFolder}",
-      "preLaunchTask": "swift: Build Debug findProcessesSysctl"
+      "name": "Release is-nomachine-running",
+      "program": "${workspaceFolder:is-nomachine-running}/.build/release/is-nomachine-running",
+      "preLaunchTask": "swift: Build Release is-nomachine-running"
     }
   ]
 }
