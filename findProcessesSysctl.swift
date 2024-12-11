@@ -9,7 +9,7 @@ func findProcesses(named processName: String) -> [Int32] {
     var memoryInformationBase = [
         KERN_PROC,  // get the process id
         KERN_PROC_ALL,  // get everything including the name
-        // KERN_USER,  // get the user who started the process
+        CTL_KERN,
     ]
 
     var bufferSize = 0
