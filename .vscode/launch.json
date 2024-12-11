@@ -33,6 +33,15 @@
       "name": "Release App",
       "program": "${workspaceFolder:is-nomachine-running}/.build/release/App",
       "preLaunchTask": "swift: Build Release App"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug findProcessesSysctl",
+      "program": "${workspaceFolder}/findProcessesSysctl.swift",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "swift: Build Debug findProcessesSysctl"
     }
   ]
 }

@@ -1,64 +1,55 @@
 import Foundation
 
-func findProcesses(named processName: String) -> [Int32] {
-    var pids: [Int32] = []
-    // var taskInfo = kinfo_proc()
-    // var taskInfoCount = Int(MemoryLayout<kinfo_proc>.size)
+func getProcessList() -> [(pid: pid_t, name: String, username: String)] {
+    var name: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0]
+    var size: size_t = 0
 
-    // largely from https://gaitatzis.medium.com/listing-running-system-processes-using-swift-43e24c20789c
-    var memoryInformationBase = [
-        KERN_PROC,  // get the process id
-        KERN_PROC_ALL,  // get everything including the name
-        CTL_KERN,
-    ]
-
-    var bufferSize = 0
-    let bufferSizeResult = sysctl(
-        &memoryInformationBase,
-        UInt32(memoryInformationBase.count),
-        nil,
-        &bufferSize,
-        nil,
-        0
-    )
-    if bufferSizeResult < 0 {
-        print("bufferSizeResult < 0")
-        perror(&errno)
+    // Get size needed for buffer
+    guard sysctl(&name, 3, nil, &size, nil, 0) == 0 else {
+        print("Error getting process list size: \(String(cString: strerror(errno)))")
         return []
     }
 
-    let entryCount = bufferSize / MemoryLayout<kinfo_proc>.stride
-    var processList: UnsafeMutablePointer<kinfo_proc>?
-    processList = UnsafeMutablePointer.allocate(capacity: entryCount)
-    defer { processList?.deallocate() }
+    // Allocate memory for process list
+    let count = size / MemoryLayout<kinfo_proc>.stride
+    var procList = Array(repeating: kinfo_proc(), count: count)
 
-    let populateProcessListResult = sysctl(
-        &memoryInformationBase,
-        UInt32(memoryInformationBase.count),
-        processList,
-        &bufferSize,
-        nil,
-        0
-    )
-    if populateProcessListResult < 0 {
-        perror(&errno)
+    // Get actual process list
+    guard sysctl(&name, 3, &procList, &size, nil, 0) == 0 else {
+        print("Error getting process list: \(String(cString: strerror(errno)))")
         return []
     }
 
-    for index in 0..<entryCount {
-        let process = processList![index]
-        let processId = process.kp_proc.p_pid
-        if processId == 0 {
-            continue
+    var processes: [(pid: pid_t, name: String, username: String)] = []
+
+    for proc in procList {
+        let pid = proc.kp_proc.p_pid
+
+        // Get process name
+        if pid == 0 { continue }  // Skip kernel process
+
+        // Get username from uid
+        let uid = proc.kp_eproc.e_ucred.cr_uid
+        var username = "unknown"
+        if let pwd = getpwuid(uid) {
+            username = String(cString: pwd.pointee.pw_name)
         }
-        let comm = process.kp_proc.p_comm
-        let name = String(cString: Mirror(reflecting: comm).children.map { $0.value as! CChar })
-        print("PID: \(processId), App: \(name)")
-        pids.append(processId)
+
+        // Get process name using proc_name
+        var name = [CChar](repeating: 0, count: Int(MAXCOMLEN + 1))
+        proc_name(pid, &name, UInt32(MAXCOMLEN + 1))
+        let processName = String(cString: name)
+
+        if !processName.isEmpty {
+            processes.append((pid: pid, name: processName, username: username))
+        }
     }
 
-    return pids
+    return processes
 }
 
-let pids = findProcesses(named: "zsh")
-print("PIDs of processes named 'zsh': \(pids)")
+// Usage example:
+let processes = getProcessList()
+for process in processes {
+    print("PID: \(process.pid), Name: \(process.name), User: \(process.username)")
+}
