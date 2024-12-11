@@ -27,5 +27,12 @@ func findProcesses(named processName: String) -> [Int32] {
     return pids
 }
 
-let pids = findProcesses(named: "fred")
-print("PIDs of processes named 'fred': \(pids)")
+// Get process name from command line arguments
+guard CommandLine.arguments.count > 1 else {
+    print("Please provide a process name as argument")
+    exit(1)
+}
+
+let processName = CommandLine.arguments[1]
+let pids = findProcesses(named: processName)
+print("PIDs of processes named '\(processName)': \(pids)")
