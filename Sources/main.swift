@@ -36,8 +36,8 @@ func getProcessList() -> [(pid: pid_t, name: String, username: String)] {
         }
 
         // Get process name using proc_name
-        var name = [CChar](repeating: 0, count: Int(MAXCOMLEN + 1))
-        proc_name(pid, &name, UInt32(MAXCOMLEN + 1))
+        var name = [CChar](repeating: 0, count: Int(256))
+        proc_name(pid, &name, UInt32(256))
         let processName = String(cString: name)
 
         if !processName.isEmpty {
