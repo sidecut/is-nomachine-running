@@ -48,8 +48,21 @@ func getProcessList() -> [(pid: pid_t, name: String, username: String)] {
     return processes
 }
 
-// Usage example:
-let processes = getProcessList()
-for process in processes {
-    print("PID: \(process.pid), Name: \(process.name), User: \(process.username)")
+// // Usage example:
+// let processes = getProcessList()
+// for process in processes {
+//     print("PID: \(process.pid), Name: \(process.name), User: \(process.username)")
+// }
+
+func main() {
+    // Get processes whose name matches any of the command line arguments
+    let processes = getProcessList()
+    let args = CommandLine.arguments.dropFirst()
+    let matchingProcesses = processes.filter { args.contains($0.name) }
+    for process in matchingProcesses {
+        print("PID: \(process.pid), Name: \(process.name), User: \(process.username)")
+    }
+    if matchingProcesses.isEmpty {
+        print("No matching processes found.")
+    }
 }
