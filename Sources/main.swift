@@ -55,6 +55,7 @@ func getProcessList() -> [(pid: pid_t, name: String, username: String)] {
 // }
 
 func main() {
+    // print("Starting")
     // Get processes whose name matches any of the command line arguments
     let processes = getProcessList()
     let args = CommandLine.arguments.dropFirst()
@@ -66,3 +67,5 @@ func main() {
         print("No matching processes found.")
     }
 }
+
+main()

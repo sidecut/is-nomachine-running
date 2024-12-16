@@ -9,18 +9,18 @@
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
-      "name": "Debug is-nomachine-running",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/is-nomachine-running",
-      "preLaunchTask": "swift: Build Debug is-nomachine-running"
+      "name": "Debug getprocs",
+      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/getprocs",
+      "preLaunchTask": "swift: Build Debug getprocs"
     },
     {
       "type": "lldb",
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
-      "name": "Release is-nomachine-running",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/release/is-nomachine-running",
-      "preLaunchTask": "swift: Build Release is-nomachine-running"
+      "name": "Release getprocs",
+      "program": "${workspaceFolder:is-nomachine-running}/.build/release/getprocs",
+      "preLaunchTask": "swift: Build Release getprocs"
     }
   ]
 }
