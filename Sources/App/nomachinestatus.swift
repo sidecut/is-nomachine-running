@@ -19,13 +19,11 @@ func getStatus() throws -> Result<NoMachineStatus, Error> {
 
     status.hostName = hostName
 
-    let nxServerProcess = try getRunningProcesses(searchForNameExact: "nxserver.bin")
-    if nxServerProcess.count > 0 {
+    let processes = try getRunningProcesses()
+    if processes.contains(where: { $0.name == "nxserver.bin" }) {
         status.noMachineRunning = true
     }
-
-    let nxExecProcess = try getRunningProcesses(searchForNameExact: "nxexec")
-    if nxExecProcess.count > 0 {
+    if processes.contains(where: { $0.name == "nxexec" }) {
         status.clientAttached = true
     }
 
@@ -42,7 +40,7 @@ enum SysCtlError: Error {
     case FailedToGetProcessList2(message: String = "Failed to get process list step 2")
 }
 
-func getRunningProcesses(searchForNameExact: String? = nil) throws -> [ProcessResult] {
+func getRunningProcesses() throws -> [ProcessResult] {
     var mib = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
     var size = 0
 
@@ -74,13 +72,7 @@ func getRunningProcesses(searchForNameExact: String? = nil) throws -> [ProcessRe
                 String(cString: $0)
             }
         }
-        let processResult = ProcessResult(pid: Int(processId), name: name)
-
-        if let searchForName = searchForNameExact, name.lowercased() == searchForName.lowercased() {
-            return [processResult]
-        }
-
-        processes.append(processResult)
+        processes.append(ProcessResult(pid: Int(processId), name: name))
     }
 
     return processes
