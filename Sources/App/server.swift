@@ -10,17 +10,12 @@ let defaultConfig = [
 ]
 
 // Status API handler
-@Sendable func statusAPI(_ req: Request) throws -> EventLoopFuture<Response> {
+@Sendable func statusAPI(_ req: Request) throws -> NoMachineStatus {
     do {
         let statusResult = try getStatus()
-        let json: Data
         switch statusResult {
         case .success(let noMachineStatus):
-            // send JSON representation of the status
-            json = try JSONEncoder().encode(noMachineStatus)
-            let response = Response(status: .ok, body: .init(data: json))
-            response.headers.replaceOrAdd(name: .contentType, value: "application/json")
-            return req.eventLoop.makeSucceededFuture(response)
+            return noMachineStatus
 
         case .failure(let error):
             throw error
@@ -79,8 +74,4 @@ public func configure(_ app: Application) async throws {
     // Configure routes
     app.get("api", use: statusAPI)
     // app.get("api2", use: getallprocsAPI)
-
-    // Configure logging
-    app.logger.logLevel = .info
-    app.logger.info("*** STARTING PID \(ProcessInfo.processInfo.processIdentifier)")
 }

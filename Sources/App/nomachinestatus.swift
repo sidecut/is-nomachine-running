@@ -1,7 +1,7 @@
 import Foundation
 import Vapor
 
-struct NoMachineStatus: Encodable {
+struct NoMachineStatus: Content {
     var hostName: String?
     var noMachineRunning: Bool = false
     var clientAttached: Bool = false
