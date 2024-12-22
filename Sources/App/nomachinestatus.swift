@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 
 struct NoMachineStatus: Encodable {
     var hostName: String?
@@ -55,7 +56,7 @@ func getStatus() throws -> Result<NoMachineStatus, Error> {
     return .success(status)
 }
 
-struct processResult {
+struct processResult: Content {
     var pid: Int
     var name: String
 }
