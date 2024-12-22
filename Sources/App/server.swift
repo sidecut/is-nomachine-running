@@ -27,7 +27,7 @@ let defaultConfig = [
 }
 
 @Sendable func getallprocsAPI(_ req: Request) throws -> [ProcessResult] {
-    let runningProcesses = getRunningProcesses()
+    let runningProcesses = try getRunningProcesses()
     return runningProcesses
 }
 

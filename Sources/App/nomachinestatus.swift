@@ -19,12 +19,12 @@ func getStatus() throws -> Result<NoMachineStatus, Error> {
 
     status.hostName = hostName
 
-    let nxServerProcess = getRunningProcesses(searchForNameExact: "nxserver.bin")
+    let nxServerProcess = try getRunningProcesses(searchForNameExact: "nxserver.bin")
     if nxServerProcess.count > 0 {
         status.noMachineRunning = true
     }
 
-    let nxExecProcess = getRunningProcesses(searchForNameExact: "nxexec")
+    let nxExecProcess = try getRunningProcesses(searchForNameExact: "nxexec")
     if nxExecProcess.count > 0 {
         status.clientAttached = true
     }
@@ -37,12 +37,17 @@ struct ProcessResult: Content {
     var name: String
 }
 
-func getRunningProcesses(searchForNameExact: String? = nil) -> [ProcessResult] {
+enum SysCtlError: Error {
+    case FailedToGetProcessList1(message: String = "Failed to get process list step 1")
+    case FailedToGetProcessList2(message: String = "Failed to get process list step 2")
+}
+
+func getRunningProcesses(searchForNameExact: String? = nil) throws -> [ProcessResult] {
     var mib = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
     var size = 0
 
     guard sysctl(&mib, UInt32(mib.count), nil, &size, nil, 0) == 0 else {
-        return []
+        throw SysCtlError.FailedToGetProcessList1()
     }
 
     let entryCount = size / MemoryLayout<kinfo_proc>.stride
@@ -50,7 +55,7 @@ func getRunningProcesses(searchForNameExact: String? = nil) -> [ProcessResult] {
     defer { processList.deallocate() }
 
     guard sysctl(&mib, UInt32(mib.count), processList, &size, nil, 0) == 0 else {
-        return []
+        throw SysCtlError.FailedToGetProcessList2()
     }
 
     var processes = [ProcessResult]()
