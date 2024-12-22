@@ -17,14 +17,14 @@ struct AppTests {
         try await app.asyncShutdown()
     }
 
-    @Test("Test Hello World Route")
-    func helloWorld() async throws {
+    @Test("Test api")
+    func api() async throws {
         try await withApp { app in
             try await app.test(
-                .GET, "hello",
+                .GET, "api",
                 afterResponse: { res async in
                     #expect(res.status == .ok)
-                    #expect(res.body.string == "Hello, world!")
+                    #expect(res.body.string.contains("hostName"))
                 })
         }
     }
