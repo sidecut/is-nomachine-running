@@ -21,18 +21,18 @@
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
-      "name": "Debug App",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/App",
-      "preLaunchTask": "swift: Build Debug App"
+      "name": "Debug IsNoMachineRunning",
+      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/IsNoMachineRunning",
+      "preLaunchTask": "swift: Build Debug IsNoMachineRunning"
     },
     {
       "type": "lldb",
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
-      "name": "Release App",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/release/App",
-      "preLaunchTask": "swift: Build Release App"
+      "name": "Release IsNoMachineRunning",
+      "program": "${workspaceFolder:is-nomachine-running}/.build/release/IsNoMachineRunning",
+      "preLaunchTask": "swift: Build Release IsNoMachineRunning"
     }
   ]
 }
