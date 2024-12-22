@@ -63,10 +63,10 @@ struct processResult: Content {
 
 func getRunningProcesses() -> [processResult] {
     var memoryInformationBase = [
+        CTL_KERN,  // kernel-related parameters and information
         KERN_PROC,  // get the process id
         KERN_PROC_ALL,  // get everything including the name
         // KERN_USER,  // get the user who started the process
-        CTL_KERN,  // kernel-related parameters and information
     ]
 
     var bufferSize = 0
