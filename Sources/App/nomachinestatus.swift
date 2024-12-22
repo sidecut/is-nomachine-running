@@ -43,10 +43,7 @@ enum SysCtlError: Error {
 }
 
 func getRunningProcesses(searchForNameExact: String? = nil) throws -> [ProcessResult] {
-    var mib = [
-        // CTL_KERN,
-        KERN_PROC, KERN_PROC_ALL,
-    ]
+    var mib = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
     var size = 0
 
     guard sysctl(&mib, UInt32(mib.count), nil, &size, nil, 0) == 0 else {
