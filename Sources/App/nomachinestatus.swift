@@ -56,14 +56,15 @@ func getRunningProcesses(searchForNameExact: String? = nil) -> [ProcessResult] {
     var processes = [ProcessResult]()
 
     for index in 0..<entryCount {
-        let process = processList[index]
+        var process = processList[index]
         let processId = process.kp_proc.p_pid
         if processId == 0 {
             continue
         }
+        let processPcom = process.kp_proc.p_comm
         let name = withUnsafePointer(to: &process.kp_proc.p_comm) {
             $0.withMemoryRebound(
-                to: CChar.self, capacity: MemoryLayout.size(ofValue: process.kp_proc.p_comm)
+                to: CChar.self, capacity: MemoryLayout.size(ofValue: processPcom)
             ) {
                 String(cString: $0)
             }
