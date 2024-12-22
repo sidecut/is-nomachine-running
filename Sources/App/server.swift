@@ -26,7 +26,7 @@ let defaultConfig = [
     }
 }
 
-@Sendable func getallprocsAPI(_ req: Request) throws -> [processResult] {
+@Sendable func getallprocsAPI(_ req: Request) throws -> [ProcessResult] {
     let runningProcesses = getRunningProcesses()
     return runningProcesses
 }
@@ -73,5 +73,5 @@ public func configure(_ app: Application) async throws {
 
     // Configure routes
     app.get("api", use: statusAPI)
-    // app.get("api2", use: getallprocsAPI)
+    app.get("api2", use: getallprocsAPI)
 }
