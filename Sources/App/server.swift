@@ -26,6 +26,11 @@ let defaultConfig = [
     }
 }
 
+@Sendable func getallprocsAPI(_ req: Request) throws -> [ProcessResult] {
+    let runningProcesses = try getRunningProcesses()
+    return runningProcesses
+}
+
 @main
 enum Entrypoint {
     static func main() async throws {
@@ -68,4 +73,5 @@ public func configure(_ app: Application) async throws {
 
     // Configure routes
     app.get("api", use: statusAPI)
+    app.get("api2", use: getallprocsAPI)
 }
