@@ -18,14 +18,8 @@ func getStatus() throws -> Result<NoMachineStatus, Error> {
     }
 
     status.hostName = hostName
-
-    let processes = try getRunningProcesses()
-    if processes.contains(where: { $0.name == "nxserver.bin" }) {
-        status.noMachineRunning = true
-    }
-    if processes.contains(where: { $0.name == "nxexec" }) {
-        status.clientAttached = true
-    }
+    status.noMachineRunning = try isProcessRunning(name: "nxserver.bin")
+    status.clientAttached = try isProcessRunning(name: "nxexec")
 
     return .success(status)
 }
@@ -40,40 +34,16 @@ enum SysCtlError: Error {
     case FailedToGetProcessList2(message: String = "Failed to get process list step 2")
 }
 
-func getRunningProcesses() throws -> [ProcessResult] {
-    var mib = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
-    var size = 0
+func isProcessRunning(name: String) throws -> Bool {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+    process.arguments = [name]
 
-    guard sysctl(&mib, UInt32(mib.count), nil, &size, nil, 0) == 0 else {
-        throw SysCtlError.FailedToGetProcessList1()
-    }
+    let pipe = Pipe()
+    process.standardOutput = pipe
 
-    let entryCount = size / MemoryLayout<kinfo_proc>.stride
-    let processList = UnsafeMutablePointer<kinfo_proc>.allocate(capacity: entryCount)
-    defer { processList.deallocate() }
-
-    guard sysctl(&mib, UInt32(mib.count), processList, &size, nil, 0) == 0 else {
-        throw SysCtlError.FailedToGetProcessList2()
-    }
-
-    var processes = [ProcessResult]()
-
-    for index in 0..<entryCount {
-        var process = processList[index]
-        let processId = process.kp_proc.p_pid
-        if processId == 0 {
-            continue
-        }
-        let processPcom = process.kp_proc.p_comm
-        let name = withUnsafePointer(to: &process.kp_proc.p_comm) {
-            $0.withMemoryRebound(
-                to: CChar.self, capacity: MemoryLayout.size(ofValue: processPcom)
-            ) {
-                String(cString: $0)
-            }
-        }
-        processes.append(ProcessResult(pid: Int(processId), name: name))
-    }
-
-    return processes
+    try process.run()
+    process.waitUntilExit()
+    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    return !data.isEmpty
 }
