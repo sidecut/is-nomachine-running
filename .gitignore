@@ -356,3 +356,6 @@ db.sqlite
 .env.*
 ! .env.example
 .vscode
+
+# Swift executable
+IsNoMachineRunning
