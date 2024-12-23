@@ -216,3 +216,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 node_modules
+
+# Swift build folder
+.build
