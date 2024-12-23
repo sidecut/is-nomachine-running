@@ -4,8 +4,15 @@
 
 See the last few results. Calling ps or pgrep SUCKS for throughput.
 
+### Summary
+
+Swift version had same CPU time as Go version, but 5x the throughput and 47% of the memory usage of Go.
+
+Maybe Rust would be better, but Swift is so easy to work with.
+
 ## Go version
 
+- 46784 requests sent
 - 3:21 CPU time
 - 66M peak during
 - 28M after a GC after stress test end
