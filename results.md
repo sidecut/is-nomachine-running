@@ -1,5 +1,9 @@
 # Results
 
+30 seconds, 10 users
+
+See the last few results. Calling ps or pgrep SUCKS for throughput.
+
 ## Go version
 
 - 3:21 CPU time
@@ -43,6 +47,13 @@ _NOTE_ Without using sysctl
 
 `1edaa9e (Use pgrep, 2024-12-22)`
 
+- 3074 requests sent
 - 0:05
 - 13M
 - 12M
+
+## Revert pgrep
+
+- 237979 requests sent
+- 3:34
+- 31M
