@@ -40,6 +40,9 @@ enum SysCtlError: Error {
     case FailedToGetProcessList2(message: String = "Failed to get process list step 2")
 }
 
+/// Retrieves the list of currently running processes on the system.
+/// - Returns: An array of `ProcessResult` containing the process ID and name.
+/// - Throws: `SysCtlError` if the process list cannot be retrieved.
 func getRunningProcesses() throws -> [ProcessResult] {
     var mib = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
     var size = 0
