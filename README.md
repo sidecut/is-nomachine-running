@@ -42,4 +42,5 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - [ ] Test on Linux
 - [ ] Test on Windows
 - [ ] Support virtual clients, multiple clients, etc.
+- [ ] Use [`create-vue`](https://github.com/vuejs/create-vue) instead of `vue cli`
 - [ ] Upgrade to Vue 3
