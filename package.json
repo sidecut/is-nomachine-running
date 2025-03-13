@@ -1,10 +1,6 @@
 {
   "name": "is-nomachine-running",
   "version": "0.1.0",
-  "engines": {
-    "node": ">=12",
-    "yarn": ">=1.22.0"
-  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
