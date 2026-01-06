@@ -17,22 +17,24 @@
       "args": []
     },
     {
-      "type": "lldb",
+      "type": "swift",
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
       "name": "Debug IsNoMachineRunning",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/debug/IsNoMachineRunning",
-      "preLaunchTask": "swift: Build Debug IsNoMachineRunning"
+      "preLaunchTask": "swift: Build Debug IsNoMachineRunning",
+      "target": "IsNoMachineRunning",
+      "configuration": "debug"
     },
     {
-      "type": "lldb",
+      "type": "swift",
       "request": "launch",
       "args": [],
       "cwd": "${workspaceFolder:is-nomachine-running}",
       "name": "Release IsNoMachineRunning",
-      "program": "${workspaceFolder:is-nomachine-running}/.build/release/IsNoMachineRunning",
-      "preLaunchTask": "swift: Build Release IsNoMachineRunning"
+      "preLaunchTask": "swift: Build Release IsNoMachineRunning",
+      "target": "IsNoMachineRunning",
+      "configuration": "release"
     }
   ]
 }
