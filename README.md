@@ -4,6 +4,14 @@ An extremely basic web server that simply displays whether nomachine is running 
 
 ## Project setup
 
+### Get proper version of node
+
+```bash
+nvm use
+```
+
+### Install all packages
+
 ```bash
 yarn install
 ```
