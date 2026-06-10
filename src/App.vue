@@ -4,16 +4,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+<script setup lang="ts">
 import Status from "./components/Status.vue";
-
-@Component({
-  components: {
-    Status
-  }
-})
-export default class App extends Vue {}
 </script>
 
 <style>

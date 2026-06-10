@@ -46,109 +46,103 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from "vue";
 
-@Component
-export default class Status extends Vue {
-  hostName = "";
-  initialized = false;
-  connected = true;
-  isRunning = false;
-  hasClient = false;
-  loading = false;
-  timerHandle = -1;
+const hostName = ref(localStorage.getItem("hostName") ?? "");
+const initialized = ref(false);
+const connected = ref(true);
+const isRunning = ref(false);
+const hasClient = ref(false);
+const loading = ref(false);
+const timerHandle = ref(-1);
 
-  created() {
-    this.hostName = localStorage.getItem("hostName") ?? "";
+watch(hostName, (newValue: string) => {
+  if (newValue) {
+    localStorage.setItem("hostName", newValue);
+  } else {
+    localStorage.removeItem("hostName");
   }
+  document.title = `${newValue} NoMachine status`;
+});
 
-  @Watch("hostName")
-  storeHostName(newValue: string, oldValue: string) {
-    if (newValue) {
-      localStorage.setItem("hostName", newValue);
+const apiAddress = computed((): string => {
+  if (hostName.value) {
+    if (hostName.value.includes("//")) {
+      return `${hostName.value}/api`;
     } else {
-      localStorage.removeItem("hostName");
+      return `//${hostName.value}/api`;
     }
+  } else {
+    return "./api";
+  }
+});
 
-    document.title = `${newValue} NoMachine status`;
+function getStatus() {
+  try {
+    loading.value = true;
+    fetch(apiAddress.value)
+      .then((response) => {
+        if (response.ok) {
+          response.json().then((data: ApiData) => {
+            connected.value = true;
+            if (!hostName.value) {
+              hostName.value = data.host_name;
+            }
+            isRunning.value = data.no_machine_running;
+            hasClient.value = data.client_attached;
+          });
+        }
+      })
+      .catch(() => {
+        connected.value = false;
+      })
+      .finally(() => {
+        initialized.value = true;
+        loading.value = false;
+        setUpTimer();
+      });
+  } catch (err) {
+    initialized.value = true;
+    loading.value = false;
+    connected.value = false;
+    setUpTimer();
   }
+}
 
-  mounted() {
-    this.getStatus();
-  }
+function refreshClick() {
+  clearTimer();
+  getStatus();
+}
 
-  get apiAddress(): string {
-    if (this.hostName) {
-      if (this.hostName.includes("//")) {
-        return `${this.hostName}/api`;
-      } else {
-        return `//${this.hostName}/api`;
-      }
-    } else {
-      return "./api";
-    }
-  }
+function clearTimer() {
+  window.clearTimeout(timerHandle.value);
+  timerHandle.value = -1;
+}
 
-  getStatus() {
-    try {
-      this.loading = true;
-      fetch(this.apiAddress)
-        .then((response) => {
-          if (response.ok) {
-            response.json().then((data: ApiData) => {
-              this.connected = true;
-              if (!this.hostName) {
-                this.hostName = data.host_name;
-              }
-              this.isRunning = data.no_machine_running;
-              this.hasClient = data.client_attached;
-            });
-          }
-        })
-        .catch((err) => {
-          this.connected = false;
-        })
-        .finally(() => {
-          this.initialized = true;
-          this.loading = false;
-          this.setUpTimer();
-        });
-    } catch (err) {
-      this.initialized = true;
-      this.loading = false;
-      this.connected = false;
-      this.setUpTimer();
-    }
-  }
-  refreshClick() {
-    this.clearTimer();
-    this.getStatus();
-  }
-  clearTimer() {
-    window.clearTimeout(this.timerHandle);
-    this.timerHandle = -1;
-  }
-  setUpTimer() {
-    this.timerHandle = window.setTimeout(this.getStatus, 15000);
-  }
+function setUpTimer() {
+  timerHandle.value = window.setTimeout(getStatus, 15000);
+}
 
-  settingsClick() {
-    let newHostName = window.prompt(
-      "Enter hostname, with optional leading http:// or https:// and optional port",
-      this.hostName
+function settingsClick() {
+  const newHostName = window.prompt(
+    "Enter hostname, with optional leading http:// or https:// and optional port",
+    hostName.value
+  );
+  if (newHostName != null && newHostName != hostName.value) {
+    const useNewHostname = window.confirm(
+      `Use "${newHostName}" instead of "${hostName.value}"?`
     );
-    if (newHostName != null && newHostName != this.hostName) {
-      let useNewHostname = window.confirm(
-        `Use "${newHostName}" instead of "${this.hostName}"?`
-      );
-      if (useNewHostname) {
-        this.hostName = newHostName ?? "";
-        this.refreshClick();
-      }
+    if (useNewHostname) {
+      hostName.value = newHostName ?? "";
+      refreshClick();
     }
   }
 }
+
+onMounted(() => {
+  getStatus();
+});
 
 interface ApiData {
   host_name: string;
