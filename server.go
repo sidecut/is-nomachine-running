@@ -7,11 +7,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"github.com/spf13/viper"
 )
 
@@ -20,7 +18,7 @@ func init() {
 	viper.SetDefault("sslport", 443)
 }
 
-func statusAPI(c echo.Context) error {
+func statusAPI(c *echo.Context) error {
 	status, err := getStatus()
 	if err != nil {
 		// TODO: log this error
@@ -32,7 +30,8 @@ func statusAPI(c echo.Context) error {
 func main() {
 	e := echo.New()
 	e.Use(middleware.Gzip())
-	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.RequestLogger())
 	e.Use(middleware.RequestID())
 
 	corsConfig := middleware.CORSConfig{AllowOrigins: []string{"*"}}
@@ -44,36 +43,22 @@ func main() {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("isno")
 	port := viper.GetInt("port")
-	sslport := viper.GetInt("sslport")
 
-	e.Logger.SetLevel(log.INFO)
-	e.Logger.Infof("*** STARTING PID %v", os.Getpid())
+	e.Logger.Info("*** STARTING ***", "pid", os.Getpid())
 
-	// Start port 443
-	go func(c *echo.Echo) {
-		e.Logger.Fatal(e.StartAutoTLS(fmt.Sprintf(":%v", sslport)))
-	}(e)
-
-	// Start port 80
-	go func() {
-		if err := e.Start(fmt.Sprintf(":%v", port)); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal(err)
-		}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer func() {
+		e.Logger.Warn("*** STOPPING ***", "pid", os.Getpid(), "signal", context.Cause(ctx))
+		stop()
 	}()
 
-	// Labstack graceful shutdown code from https://echo.labstack.com/docs/cookbook/graceful-shutdown
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
-	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
+	sc := echo.StartConfig{
+		Address: fmt.Sprintf(":%v", port),
+		// GracefulTimeout: 5 * time.Second,
+	}
 
-	quitSignal := <-quit
-
-	e.Logger.Warnf("*** STOPPING PID %v with signal %v", os.Getpid(), quitSignal)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
+	// Start port 80
+	if err := sc.Start(ctx, e); err != nil {
+		e.Logger.Error("failed to start server", "error", err)
 	}
 }
