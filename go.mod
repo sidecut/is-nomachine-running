@@ -3,7 +3,7 @@ module github.com/sidecut/is-nomachine-running
 go 1.25.0
 
 require (
-	github.com/labstack/echo/v5 v5.1.1
+	github.com/labstack/echo/v5 v5.2.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/spf13/viper v1.21.0
 )
